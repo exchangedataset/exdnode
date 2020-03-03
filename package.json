@@ -1,0 +1,33 @@
+{
+  "name": "exchangedataset-stream",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=12"
+  },
+  "description": "Node.js version of Exchangedataset historical cryptocurrency market data streaming service",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "npm run build && npx mocha",
+    "build": "babel src -d lib"
+  },
+  "keywords": [
+    "cryptocurrency-market",
+    "streaming",
+    "trade-automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.24.0",
+    "urlsafe-base64": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.6",
+    "@babel/preset-env": "^7.8.6",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "mocha": "^7.1.0"
+  }
+}
