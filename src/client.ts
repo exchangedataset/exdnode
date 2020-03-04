@@ -4,7 +4,12 @@ function convertNanosecToMinute(nanosec: bigint): number {
   return Number.parseInt((nanosec / BigInt(60) / BigInt(1000000000)).toString());
 }
 
-export interface APIResponse extends Iterable<any[]> {
+export interface APIResponse<T> extends Iterable<T> {
+  /**
+   * Returns internal representation of this response.
+   * **DO NOT** modify the returned array.
+   */
+  raw(): Array<[bigint, string]>;
 }
 
 export class Client {

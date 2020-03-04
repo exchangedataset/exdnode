@@ -1,2 +1,2 @@
 export * from './client';
-export * from './shard';
+export * from './filter/filter';
