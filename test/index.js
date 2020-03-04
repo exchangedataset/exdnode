@@ -8,6 +8,7 @@ describe('Client', function() {
   describe('new', function() {
     it('should not throw when a valid API key is given', function() {
       assert.doesNotThrow(function() {
+        
         new Client(APIKEY);
       });
     });
