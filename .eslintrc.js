@@ -7,6 +7,7 @@ module.exports = {
     'airbnb-base',
   ],
   globals: {
+    BigInt:true,
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
   },
@@ -14,11 +15,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
-  },
-  "import/resolver": {
-    node: {
-      extensions: [".ts", ".tsx"]
-    }
   },
   plugins: [
     '@typescript-eslint',

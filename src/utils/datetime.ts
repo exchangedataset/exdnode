@@ -1,5 +1,9 @@
 import moment from 'moment';
 
+export function convertNanosecToMinute(nanosec: bigint): number {
+  return Number.parseInt((nanosec / BigInt(60) / BigInt(1000000000)).toString());
+}
+
 export function convertDatetimeParam(datetime: string | Date | number | moment.Moment): number {
   if (typeof datetime === 'string') {
     // convert string to date, it will later be converted into minutes from utc

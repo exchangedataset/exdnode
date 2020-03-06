@@ -1,143 +1,119 @@
-import readline from 'readline';
-
-import { readString, httpsGet } from '../utils/stream';
-import { APIResponse } from "../client";
+import { ClientSetting } from '../client';
+import { FilterLine } from './common';
 
 /**
  * Enum of line type.
  *
  * Line type shows what type of a line it is, such as message line or start line.
  * Lines with different types contain different information and have to be treated differently.
+ *
+ * @see FilterLine
  */
 export enum LineType {
-  MSG = 1,
+  MESSAGE = 1,
   SEND,
   START,
   END,
   ERROR,
-};
-
-function convertLineType(type: string): LineType {
-  switch (type) {
-    case 'ms':
-      return LineType.MSG;
-    case 'se':
-      return LineType.SEND;
-    case 'st':
-      return LineType.START;
-    case 'en':
-      return LineType.END;
-    case 'er':
-      return LineType.ERROR;
-    default:
-      throw new Error(`Message type unknown: ${type}`);
-  }
-};
-
-export type FilterLine = {
-  type: LineType,
-  timestamp: bigint,
-  channel?: string,
-  message?: string,
-};
-
-export class FilterResponse implements APIResponse<FilterLine> {
-  constructor(private lines: [bigint, string][]) {
-  }
-
-  raw(): [bigint, string][] {
-    return this.lines;
-  }
-
-  [Symbol.iterator](): Iterator<FilterLine, any, undefined> {
-    const self = this;
-    let position = 0;
-    const iterator = {
-      next(): IteratorResult<FilterLine> {
-        const ret = this.return(position);
-        position += 1;
-        return ret;
-      },
-      return(value: number): IteratorResult<FilterLine> {
-        const arr = self.lines[value];
-        const line = arr[1];
-        const type = convertLineType(line.slice(0, 2));
-        const timestamp = arr[0];
-        let channel = null;
-        let message = null;
-        if (type === LineType.MSG || type === LineType.SEND) {
-          // message or send have 4 section
-          const split = line.split('\t', 4);
-          channel = split[2];
-          message = split[3];
-          return {
-            done: value >= self.lines.length,
-            value: { type, timestamp, channel, message },
-          }
-        } else if (type === LineType.START || type === LineType.ERROR) {
-          // start or error have 3 section without channel
-          const split = line.split('\t', 3);
-          message = split[2];
-          return {
-            done: value >= self.lines.length,
-            value: { type, timestamp, message },
-          }
-        }
-        // it has no additional information
-        return {
-          done: value >= self.lines.length,
-          value: { type, timestamp },
-        }
-      }
-    }
-    return iterator;
-  }
 }
 
+/**
+ * Data structure of a single line from a filter response.
+ *
+ * `type` and `timestamp` is always present, **but `channel` or `message` is not.**
+ * This is because with certain `type`, a line might not contain `channel` or `message`, or both.
+ *
+ * @see FilterLine.type
+ */
+export type FilterLine = {
+  /**
+   * If `type === LineType.MESSAGE`, then a line is a normal message.
+   * All of value are present.
+   * You can get an assosiated channel by `channel`, and its message by `message`.
+   *
+   * If `type === LineType.SEND`, then a line is a request server sent when the dataset was
+   * recorded.
+   * All of value are present, though you can ignore this line.
+   *
+   * If `type === LineType.START`, then a line marks the start of new continuous recording of the
+   * dataset.
+   * Only `channel` is not present. `message` is the URL which used to record the dataset.
+   * You might want to initialize your work since this essentially means new connection to
+   * exchange's API.
+   *
+   * If `type === LineType.END`, then a line marks the end of continuous recording of the dataset.
+   * Other than `type` and `timestamp` are not present.
+   * You might want to perform some functionality when the connection to exchange's API was lost.
+   *
+   * If `type === LineType.ERROR`, then a line contains error message when recording the dataset.
+   * Only `channel` is not present. `message` is the error message.
+   * You want to ignore this line.
+   *
+   * @see FilterLine
+   */
+  type: LineType,
+  /**
+   * Timestamp in nano seconds in unixtime-compatible format (unixtime * 10^9 + nanosec-part)
+   * of this line was recorded.
+   * Timezone is UTC.
+   */
+  timestamp: bigint,
+  /**
+   * Channel name which this line is assosiated with.
+   * Can be `undefined` according to `type`.
+   * @see type
+   */
+  channel?: string,
+  /**
+   * Message.
+   * Can be `undefined` according to `type`.
+   * @see type
+   */
+  message?: string,
+}
 
 /**
- * Read lines and process each line to an easily manipulatable data structure.
- * @param stream Object which extends Stream class to read lines from
- * @returns An array:
- * [line type, timestamp in nano second, ...data if this line type carries]
- * @throws TypeError If parameter did not extend Stream class.
+ * Parameters for filter request.
  */
-function readLines(stream: NodeJS.ReadableStream): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    const lineStream = readline.createInterface({
-      input: stream,
-    });
-    const lineArr: any[][] = [];
-    lineStream.on('line', (line) => {
-      const split = line.split('\t', 3);
-      const timestamp = BigInt(split[1]);
-    });
-    lineStream.on('error', (error) => reject(error));
-    lineStream.on('end', () => resolve(lineArr));
-  });
-};
+export type FilterParam = {
+  clientSetting: ClientSetting,
+  exchange: string,
+  start: bigint,
+  end: bigint,
+  channels: string[],
+}
 
-async function downloadShard(apikey: string, exchange: string, minute: number, channels: string[]): Promise<string[]> {
-  const res = await httpsGet(apikey, `/filter/${exchange}/${minute}`, { channels });
+/**
+ * Request to filter API.
+ *
+ * You can pick the way to read the response:
+ * - {@link download} to immidiately start downloading the whole
+ * response as one array.
+ * - {@link stream} to return iterable object yields line by line.
+ */
+export interface FilterRequest {
+  download(): Promise<FilterLine[]>;
 
-  /* check status code and content-type header */
-  const { statusCode, headers } = res;
-  // 200 = ok, 404 = database not found
-  if (statusCode !== 200 && statusCode !== 404) {
-    const obj = JSON.parse(await readString(res));
-    const error = obj.error || obj.message || obj.Message;
-    throw new Error(`Request failed: ${error}\nPlease check the internet connection and the remaining quota of your API key`);
-  }
-  const contentType = headers['content-type'];
-  if (contentType !== 'text/plain') {
-    throw new Error(`Invalid response content-type, expected: 'text/plain' got: '${contentType}'`);
-  }
+  /**
+   * Read response by streaming.
+   *
+   * Returns Iterable object yields response line by line.
+   * Can be iterated using for-async-of sentence.
+   * Iterator yields immidiately if a line is bufferred, waits for download if not avaliable.
+   *
+   * **Please note that buffering won't start by calling this method,**
+   * **calling {@link AsyncIterable.[Symbol.asyncIterator]} will.**
+   *
+   * Higher responsiveness than {@link downloadAsArray} is expected as it does not have to wait for
+   * the entire data to be downloaded.
+   *
+   * @param bufferSize Desired buffer size to store streaming data.
+   * One dataset is equavalent to one minute. Optional.
+   * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
+   */
+  stream(bufferSize?: number): Promise<AsyncIterable<FilterLine>>;
+}
 
-  if (statusCode === 200) {
-    /* read lines from the response stream and store it in a class member */
-    return await readLines(res);
-  }
-  res.destroy();
-  // statusCode === 404
-  return [];
-};
+export function filter(): FilterRequest {
+
+}
