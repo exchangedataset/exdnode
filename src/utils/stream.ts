@@ -3,7 +3,7 @@ import querystring, { ParsedUrlQueryInput } from 'querystring';
 import { IncomingMessage } from 'http';
 
 import { URL_API } from '../variables';
-import { ClientSetting } from '../client';
+import { ClientSetting } from '../client/impl';
 
 /**
  * Read from stream and returns it as one big string

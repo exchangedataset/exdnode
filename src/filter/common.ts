@@ -1,7 +1,9 @@
 import readline from 'readline';
 
 import { readString, httpsGet } from '../utils/stream';
-import { LineType, FilterLine, FilterParam } from './filter';
+import { LineType, FilterLine } from './filter';
+import { ClientSetting } from '../client/impl';
+import { FilterSetting } from './impl';
 
 export function convertLineType(type: string): LineType {
   switch (type) {
@@ -41,7 +43,9 @@ async function readLines(stream: NodeJS.ReadableStream): Promise<FilterLine[]> {
         const timestamp = BigInt(split[1]);
         const channel = split[2];
         const message = split[3];
-        lineArr.push({ type, timestamp, channel, message });
+        lineArr.push({
+          type, timestamp, channel, message,
+        });
       } else if (type === LineType.START || type === LineType.ERROR) {
         // start or error have 3 section without channel
         const split = line.split('\t', 3);
@@ -60,11 +64,12 @@ async function readLines(stream: NodeJS.ReadableStream): Promise<FilterLine[]> {
 }
 
 export async function downloadShard(
-  filterParams: FilterParam,
+  clientSetting: ClientSetting,
+  filterParams: FilterSetting,
   minute: number,
 ): Promise<FilterLine[]> {
   const res = await httpsGet(
-    filterParams.clientSetting,
+    clientSetting,
     `/filter/${filterParams.exchange}/${minute}`,
     { channels: filterParams.channels },
   );

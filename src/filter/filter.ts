@@ -1,6 +1,15 @@
-import { ClientSetting } from '../client';
-import { FilterLine } from './common';
-import FilterRequestImpl from './request';
+import { ClientParam } from '../client/client';
+import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
+import { setupSetting as setupClientSetting } from '../client/impl';
+
+import moment = require('moment');
+
+export type FilterParam = {
+  exchange: string;
+  start: string | Date | number | moment.Moment;
+  end: string | Date | number | moment.Moment;
+  channels: string[];
+}
 
 /**
  * Enum of line type.
@@ -52,36 +61,25 @@ export type FilterLine = {
    *
    * @see FilterLine
    */
-  type: LineType,
+  type: LineType;
   /**
    * Timestamp in nano seconds in unixtime-compatible format (unixtime * 10^9 + nanosec-part)
    * of this line was recorded.
    * Timezone is UTC.
    */
-  timestamp: bigint,
+  timestamp: bigint;
   /**
    * Channel name which this line is assosiated with.
    * Can be `undefined` according to `type`.
    * @see type
    */
-  channel?: string,
+  channel?: string;
   /**
    * Message.
    * Can be `undefined` according to `type`.
    * @see type
    */
-  message?: string,
-}
-
-/**
- * Parameters for filter request.
- */
-export type FilterParam = {
-  clientSetting: ClientSetting,
-  exchange: string,
-  start: bigint,
-  end: bigint,
-  channels: string[],
+  message?: string;
 }
 
 /**
@@ -112,9 +110,9 @@ export interface FilterRequest {
    * One dataset is equavalent to one minute. Optional.
    * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
    */
-  stream(bufferSize?: number): Promise<AsyncIterable<FilterLine>>;
+  stream(bufferSize?: number): AsyncIterable<FilterLine>;
 }
 
-export function filter(): FilterRequest {
-  return new FilterRequestImpl();
+export function filter(clientParams: ClientParam, params: FilterParam): FilterRequest {
+  return new FilterRequestImpl(setupClientSetting(clientParams), setupFilterSetting(params));
 }
