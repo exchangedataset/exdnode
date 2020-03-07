@@ -1,5 +1,6 @@
 import { ClientSetting } from '../client';
 import { FilterLine } from './common';
+import FilterRequestImpl from './request';
 
 /**
  * Enum of line type.
@@ -115,5 +116,5 @@ export interface FilterRequest {
 }
 
 export function filter(): FilterRequest {
-
+  return new FilterRequestImpl();
 }
