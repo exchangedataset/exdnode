@@ -20,11 +20,11 @@ export type FilterParam = {
  * @see FilterLine
  */
 export enum LineType {
-  MESSAGE = 1,
-  SEND,
-  START,
-  END,
-  ERROR,
+  MESSAGE = 'msg',
+  SEND = 'send',
+  START = 'start',
+  END = 'end',
+  ERROR = 'err',
 }
 
 /**

@@ -1,21 +1,19 @@
 import { FilterLine } from './filter';
-import { downloadShard } from './common';
-import { convertNanosecToMinute } from '../utils/datetime';
-import { FILTER_DEFAULT_BUFFER_SIZE } from '../variables';
 import { ClientSetting } from '../client/impl';
 import { FilterSetting } from './impl';
-
-type Notifier = (err?: Error) => void;
-type Shard = FilterLine[];
-type ShardSlot = { shard?: Shard };
+import { Shard, ShardIterator } from './shard_iterator';
 
 export default class FilterStreamIterator implements AsyncIterator<FilterLine> {
+  private shardIterator: AsyncIterator<Shard>;
   private itrNext: IteratorResult<Shard> | null;
   private position: number;
 
   private constructor(
-    private shardIterator: AsyncIterator<Shard>,
+    clientSetting: ClientSetting,
+    filterSetting: FilterSetting,
+    bufferSize?: number,
   ) {
+    this.shardIterator = new ShardIterator(clientSetting, filterSetting, bufferSize);
     this.itrNext = null;
     this.position = 0;
   }
@@ -74,102 +72,5 @@ export default class FilterStreamIterator implements AsyncIterator<FilterLine> {
       done: false,
       value: line,
     };
-  }
-
-  static create(
-    clientSetting: ClientSetting,
-    filterSetting: FilterSetting,
-    bufferSize: number = FILTER_DEFAULT_BUFFER_SIZE,
-  ): FilterStreamIterator {
-    // fill buffer with null value (means not downloaded)
-    const buffer: ShardSlot[] = [];
-    let notifier: Notifier | null = null;
-    let nextDownloadMinute = convertNanosecToMinute(filterSetting.start);
-    const endMinute = convertNanosecToMinute(filterSetting.end);
-    let error: Error | null = null;
-
-    const downloadNewShard = (): void => {
-      // push empty slot to represent shard downloading
-      const slot: ShardSlot = {};
-      buffer.push(slot);
-      downloadShard(clientSetting, filterSetting, nextDownloadMinute).then((shard) => {
-        // once downloaded, set instance of shard
-        slot.shard = shard;
-        if (notifier !== null) {
-          // call notifier to let promise in wait for downloading know
-          notifier();
-        }
-      }).catch((err) => {
-        if (notifier === null) {
-          error = err;
-        } else {
-          // notify error
-          notifier(err);
-        }
-      });
-      nextDownloadMinute += 1;
-    };
-
-    // start downloading shards to fill buffer
-    for (let i = 0; i < bufferSize && nextDownloadMinute <= endMinute; i += 1) downloadNewShard();
-
-    const shardIterator: AsyncIterator<Shard> = {
-      async next(): Promise<IteratorResult<Shard>> {
-        // if error during download was not handled, reject this promise to let others know
-        if (error) throw error;
-
-        if (buffer.length === 0) {
-          throw new Error('Iterator overran buffer');
-        }
-
-        // there is always the first element in buffer
-        if (typeof buffer[0].shard === 'undefined') {
-          // shard is being downloaded, wait for it
-          return new Promise((resolve, reject) => {
-            // this is in promise callback, it will be called later
-            // there might be shard already, check for that
-            if (typeof buffer[0].shard === 'undefined') {
-              notifier = (err): void => {
-                // download error, reject with it
-                if (err) reject(err);
-                if (typeof buffer[0].shard === 'undefined') {
-                  // the first element is still not downloaded
-                  // wait more
-                  return;
-                }
-                const { shard } = buffer[0];
-                buffer.shift();
-                if (nextDownloadMinute <= endMinute) downloadNewShard();
-                resolve({
-                  done: buffer.length === 0,
-                  value: shard,
-                });
-                // deregister this notifier
-                notifier = null;
-              };
-            } else {
-              const { shard } = buffer[0];
-              buffer.shift();
-              if (nextDownloadMinute <= endMinute) downloadNewShard();
-              resolve({
-                done: buffer.length === 0,
-                value: shard,
-              });
-            }
-          });
-        }
-        // shard is bufferred, return it
-        const { shard } = buffer[0];
-        buffer.shift();
-        if (nextDownloadMinute <= endMinute) downloadNewShard();
-        return Promise.resolve({
-          // if there is no slot in buffer, then there is no next shard
-          done: buffer.length === 0,
-          value: shard,
-        });
-      },
-    };
-
-    return new FilterStreamIterator(shardIterator);
   }
 }

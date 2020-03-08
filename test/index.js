@@ -34,17 +34,22 @@ describe('FilterRequest', function() {
     end: (26375332n * 60n - 25n) * 1000000000n,
     channels: ['orderBookL2'],
   };
+  let downloadParams = [];
+  let downloadTruncate = [];
+
   describe('download', function() {
     it('normal', async function() {
-      this.timeout(10000);
+      this.timeout(20000);
       const req = client.filter(params);
       const res = await req.download();
+      downloadParams = res;
       assert.notDeepEqual(res.length, 0, 'returned array empty: expected at least one line');
     });
     it('multiple shard', async function() {
       this.timeout(20000);
       const req = client.filter(truncate);
       const res = await req.download();
+      downloadTruncate = res;
       assert.notDeepEqual(res.length, 0, 'returned array empty: expected at least one line');
       // all of timestamps of lines must be within value which caller intended
       for (line of res) {
@@ -54,11 +59,15 @@ describe('FilterRequest', function() {
   });
   describe('stream', function() {
     it('normal', async function() {
-      this.timeout(10000);
+      this.timeout(20000);
       const req = client.filter(params);
-      const itr = req.stream()[Symbol.asyncIterator]();
-      const next = await itr.next();
-      assert.ok(next.done === false, 'no line returned: at least one line is expected');
+      const stream = req.stream();
+      let count = 0;
+      for await (line of stream) {
+        assert.deepEqual(line.timestamp, downloadParams[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadParams[count].timestamp}`);
+        count += 1;
+      }
+      assert.deepEqual(count, downloadParams.length, 'line count is different');
     });
     it('multiple shard', async function() {
       this.timeout(20000);
@@ -66,10 +75,10 @@ describe('FilterRequest', function() {
       const stream = req.stream();
       let count = 0;
       for await (line of stream) {
-        assert.ok(truncate.start <= line.timestamp && line.timestamp < truncate.end, `timestamp is out of range of what expected: ${line.timestamp}, exp: ${truncate.start} -> ${truncate.end}`);
-        count++;
+        assert.deepEqual(line.timestamp, downloadTruncate[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadTruncate[count].timestamp}`);
+        count += 1;
       }
-      assert.notDeepEqual(count, 0, 'no line returned: at least one line is expected');
+      assert.deepEqual(count, downloadTruncate.length, 'line count is different');
     });
   });
 });

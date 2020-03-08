@@ -54,12 +54,13 @@ async function readLines(setting: FilterSetting, stream: NodeJS.ReadableStream):
         if (timestamp < setting.start || setting.end < timestamp) return;
         const message = split[2];
         lineArr.push({ type, timestamp, message });
+      } else {
+        const split = line.split('\t', 2);
+        const timestamp = BigInt(split[1]);
+        if (timestamp < setting.start || setting.end < timestamp) return;
+        // it has no additional information
+        lineArr.push({ type, timestamp });
       }
-      const split = line.split('\t', 2);
-      const timestamp = BigInt(split[1]);
-      if (timestamp < setting.start || setting.end < timestamp) return;
-      // it has no additional information
-      lineArr.push({ type, timestamp });
     });
     lineStream.on('error', (error) => reject(error));
     lineStream.on('close', () => resolve(lineArr));
