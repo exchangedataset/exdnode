@@ -22,7 +22,7 @@ export function convertDatetimeParam(
   } else if (typeof tmp === 'number') {
     // minute in integer form
     if (!Number.isInteger(tmp)) throw TypeError('Parameter "datetime" as minutes must be an integer');
-    unixtime = tmp;
+    unixtime = tmp * 60;
   } else {
     // must be moment.Moment
     unixtime = tmp.unix();

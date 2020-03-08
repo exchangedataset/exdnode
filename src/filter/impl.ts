@@ -1,7 +1,7 @@
 import { FilterLine, FilterRequest, FilterParam } from "./filter";
 import { convertNanosecToMinute, convertDatetimeParam } from "../utils/datetime";
 import { downloadShard } from "./common";
-import FilterStream from "./stream";
+import FilterStreamIterator from "./stream_iterator";
 import { ClientSetting } from "../client/impl";
 
 export type FilterSetting = {
@@ -13,7 +13,14 @@ export type FilterSetting = {
 
 export function setupSetting(params: FilterParam): FilterSetting {
   const start = convertDatetimeParam(params.start);
-  const end = convertDatetimeParam(params.end);
+  let end = convertDatetimeParam(params.end);
+  if (typeof params.end === 'number') {
+    // if end is in minute, that means end + 60 seconds (exclusive)
+    // adding 60 seconds
+    end += BigInt('60') * BigInt('1000000000');
+  }
+  // end in nanosec is exclusive
+  end -= BigInt('1');
 
   // must return new object so it won't be modified externally
   return {
@@ -32,18 +39,25 @@ export class FilterRequestImpl implements FilterRequest {
     const endMinute = convertNanosecToMinute(this.setting.end);
 
     const promises: Promise<FilterLine[]>[] = [];
-    for (let minute = startMinute; minute < endMinute; minute += 1) {
+    for (let minute = startMinute; minute <= endMinute; minute += 1) {
       promises.push(downloadShard(
         this.clientSetting,
         this.setting,
         minute,
       ));
     }
+
     return Promise.all(promises)
       .then((shards: FilterLine[][]) => ([] as FilterLine[]).concat(...shards));
   }
 
   stream(bufferSize?: number): AsyncIterable<FilterLine> {
-    return FilterStream.create(this.clientSetting, this.setting, bufferSize);
+    const clientSetting = this.clientSetting;
+    const setting = this.setting;
+    return {
+      [Symbol.asyncIterator](): AsyncIterator<FilterLine> {
+        return FilterStreamIterator.create(clientSetting, setting, bufferSize);
+      },
+    };
   }
 }

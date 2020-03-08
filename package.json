@@ -7,7 +7,7 @@
   "description": "Node.js version of Exchangedataset historical cryptocurrency market data streaming service",
   "main": "src/index.js",
   "scripts": {
-    "test": "npm run build && npx mocha",
+    "test": "yarn run build && yarn mocha",
     "build": "tsc"
   },
   "keywords": [

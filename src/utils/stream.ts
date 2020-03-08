@@ -28,12 +28,11 @@ export function httpsGet(
   clientSetting: ClientSetting,
   resource: string,
   query: ParsedUrlQueryInput,
-):Promise<IncomingMessage> {
+): Promise<IncomingMessage> {
   return new Promise((resolve) => {
     const stringQuery = querystring.stringify(query);
-    https.get(URL_API, {
+    https.get(`${URL_API}/${resource}?${stringQuery}`, {
       headers: { Authorization: `Bearer ${clientSetting.apikey}` },
-      path: `${resource}?${stringQuery}`,
       timeout: clientSetting.timeout,
     }, (res) => resolve(res));
   });

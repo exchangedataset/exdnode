@@ -9,92 +9,90 @@ type Notifier = (err?: Error) => void;
 type Shard = FilterLine[];
 type ShardSlot = { shard?: Shard };
 
-export default class FilterStream implements AsyncIterable<FilterLine> {
+export default class FilterStreamIterator implements AsyncIterator<FilterLine> {
+  private itrNext: IteratorResult<Shard> | null;
+  private position: number;
+
   private constructor(
     private shardIterator: AsyncIterator<Shard>,
-  ) {}
+  ) {
+    this.itrNext = null;
+    this.position = 0;
+  }
 
-  [Symbol.asyncIterator](): AsyncIterator<FilterLine> {
-    const shardIterator = this.shardIterator;
-    let itrNext: IteratorResult<Shard> | null = null;
-    let position = 0;
-
-    return {
-      async next(): Promise<IteratorResult<FilterLine>> {
-        if (itrNext === null) {
-          // get very first shard
-          // and find the first line
-          itrNext = await shardIterator.next();
-          // there could be empty shard (length === 0) which have to be ignored
-          while (itrNext.value.length === 0) {
-            if (itrNext.done) {
-              // nothing from the beginning, no lines at all
-              return {
-                done: true,
-                value: null,
-              };
-            }
-            // move to next shard
-            // this must be await-ed because it needs this return value for this loop to find
-            // if the next next shard exists
-            // eslint-disable-next-line no-await-in-loop
-            itrNext = await shardIterator.next();
-          }
-          // itrNext.value is the shard that has at least one line
-          // position === 0
+  async next(): Promise<IteratorResult<FilterLine>> {
+    if (this.itrNext === null) {
+      // get very first shard
+      // and find the first line
+      this.itrNext = await this.shardIterator.next();
+      // there could be empty shard (length === 0) which have to be ignored
+      while (this.itrNext.value.length === 0) {
+        if (this.itrNext.done) {
+          // nothing from the beginning, no lines at all
+          return {
+            done: true,
+            value: null,
+          };
         }
-        // at this point, the line to return for this call is already
-        // determined except if caller had missed done=true flag
-        // and called this method again, which is a invalid move
-        if (itrNext.value.length <= position) {
-          // line to return should exist, but none found
-          // caller must have missed done=true
-          throw new Error('Iterator out of range: did you check "done"?');
-        }
-        const line = itrNext.value[position];
-        position += 1;
-        // find out if this line is the last line
-        while (itrNext.value.length <= position) {
-          // this shard has been all read, go to next shard if there is
-          if (itrNext.done) {
-            // there is no next shard, this is the last line
-            return {
-              done: true,
-              value: line,
-            };
-          }
-          // set position back to 0 for the next shard
-          position = 0;
-          // eslint-disable-next-line no-await-in-loop
-          itrNext = await shardIterator.next();
-        }
-
-        // this is not the last line
+        // move to next shard
+        // this must be await-ed because it needs this return value for this loop to find
+        // if the next next shard exists
+        // eslint-disable-next-line no-await-in-loop
+        this.itrNext = await this.shardIterator.next();
+      }
+      // itrNext.value is the shard that has at least one line
+      // position === 0
+    }
+    // at this point, the line to return for this call is already
+    // determined except if caller had missed done=true flag
+    // and called this method again, which is a invalid move
+    if (this.itrNext.value.length <= this.position) {
+      // line to return should exist, but none found
+      // caller must have missed done=true
+      throw new Error('Iterator out of range: did you check "done"?');
+    }
+    const line = this.itrNext.value[this.position];
+    this.position += 1;
+    // find out if this line is the last line
+    while (this.itrNext.value.length <= this.position) {
+      // this shard has been all read, go to next shard if there is
+      if (this.itrNext.done) {
+        // there is no next shard, this is the last line
         return {
-          done: false,
+          done: true,
           value: line,
         };
-      },
+      }
+      // set position back to 0 for the next shard
+      this.position = 0;
+      // eslint-disable-next-line no-await-in-loop
+      this.itrNext = await this.shardIterator.next();
+    }
+
+    // this is not the last line
+    return {
+      done: false,
+      value: line,
     };
   }
 
   static create(
     clientSetting: ClientSetting,
-    filterParam: FilterSetting,
+    filterSetting: FilterSetting,
     bufferSize: number = FILTER_DEFAULT_BUFFER_SIZE,
-  ): FilterStream {
+  ): FilterStreamIterator {
     // fill buffer with null value (means not downloaded)
     const buffer: ShardSlot[] = [];
     let notifier: Notifier | null = null;
-    let nextDownloadMinute = convertNanosecToMinute(filterParam.start);
-    const endMinute = convertNanosecToMinute(filterParam.end);
+    let nextDownloadMinute = convertNanosecToMinute(filterSetting.start);
+    const endMinute = convertNanosecToMinute(filterSetting.end);
     let error: Error | null = null;
 
     const downloadNewShard = (): void => {
       // push empty slot to represent shard downloading
       const slot: ShardSlot = {};
       buffer.push(slot);
-      downloadShard(clientSetting, filterParam, nextDownloadMinute).then((shard) => {
+      downloadShard(clientSetting, filterSetting, nextDownloadMinute).then((shard) => {
         // once downloaded, set instance of shard
         slot.shard = shard;
         if (notifier !== null) {
@@ -172,6 +170,6 @@ export default class FilterStream implements AsyncIterable<FilterLine> {
       },
     };
 
-    return new FilterStream(shardIterator);
+    return new FilterStreamIterator(shardIterator);
   }
 }
