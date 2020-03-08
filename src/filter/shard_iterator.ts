@@ -55,7 +55,10 @@ export class ShardIterator implements AsyncIterator<Shard> {
     if (this.error) throw this.error;
 
     if (this.buffer.length === 0) {
-      throw new Error('Iterator overran buffer');
+      return {
+        done: true,
+        value: null,
+      };
     }
 
     // there is always the first element in buffer
@@ -77,7 +80,7 @@ export class ShardIterator implements AsyncIterator<Shard> {
             this.buffer.shift();
             if (this.nextDownloadMinute <= this.endMinute) this.downloadNewShard();
             resolve({
-              done: this.buffer.length === 0,
+              done: false,
               value: shard,
             });
             // deregister this notifier
@@ -88,7 +91,7 @@ export class ShardIterator implements AsyncIterator<Shard> {
           this.buffer.shift();
           if (this.nextDownloadMinute <= this.endMinute) this.downloadNewShard();
           resolve({
-            done: this.buffer.length === 0,
+            done: false,
             value: shard,
           });
         }
@@ -99,8 +102,7 @@ export class ShardIterator implements AsyncIterator<Shard> {
     this.buffer.shift();
     if (this.nextDownloadMinute <= this.endMinute) this.downloadNewShard();
     return Promise.resolve({
-      // if there is no slot in buffer, then there is no next shard
-      done: this.buffer.length === 0,
+      done: false,
       value: shard,
     });
   }

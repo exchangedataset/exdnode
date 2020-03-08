@@ -56,7 +56,7 @@ export class FilterRequestImpl implements FilterRequest {
     const setting = this.setting;
     return {
       [Symbol.asyncIterator](): AsyncIterator<FilterLine> {
-        return FilterStreamIterator.create(clientSetting, setting, bufferSize);
+        return new FilterStreamIterator(clientSetting, setting, bufferSize);
       },
     };
   }
