@@ -5,9 +5,8 @@ import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
 import { setupSetting as setupClientSetting } from '../client/impl';
 
 export type Exchange = 'bitmex' | 'bitfinex' | 'bitflyer';
-export type Filter = { [key in Exchange]?: string[] };
 export type FilterParam = {
-  filter: Filter;
+  filter: { string: string[] };
   start: string | Date | number | moment.Moment;
   end: string | Date | number | moment.Moment;
 }
@@ -40,7 +39,7 @@ export type FilterLine = {
   /**
    * Exchange on which this line is recorded.
    */
-  exchange: Exchange;
+  exchange: string;
   /**
    * If `type === LineType.MESSAGE`, then a line is a normal message.
    * All of value are present.

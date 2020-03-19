@@ -1,18 +1,21 @@
-import readline from "readline";
-
 import { ClientSetting } from "../client/impl";
-import { FilterLine, LineType, Exchange } from "./filter";
-import { httpsGet, readString } from "../utils/stream";
-import { convertLineType } from "./common";
+import { FilterLine } from "./filter";
 import { FilterSetting, Shard } from "./impl";
 import { convertNanosecToMinute } from "../utils/datetime";
+import { downloadShard } from "./common";
 
-export class DownloadedShardsIterator implements AsyncIterator<Shard> {
-  private position: number = 0;
+export class DownloadedShardsIterator implements Iterator<FilterLine> {
+  private position = 0;
 
   constructor(private shards: Shard[]) {}
 
-  public async next(): Promise<IteratorResult<Shard>> {
+  public next(): IteratorResult<FilterLine> {
+    // find the line to return
+    while (this.shards.length > 0 && this.shards[0].length < this.position) {
+      // this shard is all read
+      this.shards.shift();
+      this.position = 0;
+    }
     if (this.shards.length === 0) {
       // there is no line left
       return {
@@ -20,26 +23,8 @@ export class DownloadedShardsIterator implements AsyncIterator<Shard> {
         value: null,
       };
     }
-    if (this.shards.length === null) {
-      // this is the first time this function is called
-      this.itrNext = await this.shardIterator.next();
-      // there must be at least one shard
-    }
-    // skip shards which is read until the end, including empty ones as long as available
-    while (!this.itrNext.done && this.itrNext.value.length <= this.position) {
-      this.itrNext = await this.shardIterator.next();
-      // set position back to zero for the new shard
-      this.position = 0;
-    }
-    if (this.itrNext.done) {
-      // reached the last line, done
-      return {
-        done: true,
-        value: null,
-      };
-    }
     // return the line
-    const line = this.itrNext.value[this.position];
+    const line = this.shards[0][this.position];
     this.position += 1;
     return {
       done: false,
@@ -48,136 +33,10 @@ export class DownloadedShardsIterator implements AsyncIterator<Shard> {
   }
 }
 
-async function readLines(exchange: Exchange, stream: NodeJS.ReadableStream): Promise<FilterLine[]> {
-  return new Promise((resolve, reject) => {
-    const lineStream = readline.createInterface({
-      input: stream,
-    });
-    const lineArr: FilterLine[] = [];
-    lineStream.on('line', (line: string) => {
-      const prefix = line.slice(0, 2);
-      let split;
-      switch (prefix) {
-        case 'ms':
-          // message or send have 4 section
-          split = line.split('\t', 4);
-          lineArr.push({
-            exchange,
-            type: LineType.MESSAGE,
-            timestamp: BigInt(split[1]),
-            channel: split[2],
-            message: split[3],
-          });
-          break;
-        case 'se':
-          split = line.split('\t', 4);
-          lineArr.push({
-            exchange,
-            type: LineType.SEND,
-            timestamp: BigInt(split[1]),
-            channel: split[2],
-            message: split[3],
-          });
-          break;
-        case 'st':
-          // start or error have 3 section without channel
-          split = line.split('\t', 3);
-          lineArr.push({
-            exchange,
-            type: LineType.START,
-            timestamp: BigInt(split[1]),
-            message: split[2]
-          });
-          break;
-        case 'er':
-          split = line.split('\t', 3);
-          lineArr.push({
-            exchange,
-            type: LineType.ERROR,
-            timestamp: BigInt(split[1]),
-            message: split[2]
-          });
-          break;
-        default:
-          split = line.split('\t', 2);
-          // it has no additional information
-          lineArr.push({
-            exchange,
-            type: convertLineType(split[0]),
-            timestamp: BigInt(split[1])
-          });
-          break;
-      }
-    });
-    lineStream.on('error', (error: Error) => reject(error));
-    lineStream.on('close', () => resolve(lineArr));
-  });
-}
+type ExchangeShards = { [key: string]: Shard[] };
 
-/**
- * Download a shard of specified exchange, and minute filtered by channels 
- * @param clientSetting
- * @param exchange
- * @param channels
- * @param start This is needed to cut not needed head/tail from the shard
- * @param end Same as above, but excluded (timestamp < end)
- * @param minute
- */
-async function downloadShard(
-  clientSetting: ClientSetting,
-  exchange: Exchange,
-  channels: string[],
-  start: bigint,
-  end: bigint,
-  minute: number,
-): Promise<FilterLine[]> {
-  // request and download
-  const res = await httpsGet(
-    clientSetting,
-    `filter/${exchange}/${minute}`,
-    { channels },
-  );
-
-  /* check status code and content-type header */
-  const { statusCode, headers } = res;
-  // 200 = ok, 404 = database not found
-  if (statusCode !== 200 && statusCode !== 404) {
-    const msg = await readString(res);
-    let error: Error | string;
-    try {
-      const obj = JSON.parse(msg);
-      error = obj.error || obj.message || obj.Message;
-    } catch (e) {
-      error = msg;
-    }
-    throw new Error(`Request failed: ${statusCode} ${error}\nPlease check the internet connection and the remaining quota of your API key`);
-  }
-  // check content type
-  const contentType = headers['content-type'];
-  if (contentType !== 'text/plain') {
-    throw new Error(`Invalid response content-type, expected: 'text/plain' got: '${contentType}'`);
-  }
-
-  // process stream to get lines
-  let lines: FilterLine[] = [];
-  if (statusCode === 200) {
-    /* read lines from the response stream */
-    lines = await readLines(exchange, res);
-  }
-  res.destroy();
-
-  // should this head/tail be cut?
-  if (convertNanosecToMinute(start) === minute || convertNanosecToMinute(end) === minute) {
-    lines = lines.filter((line) => start <= line.timestamp && line.timestamp < end);
-  }
-
-  return lines;
-}
-
-type ExchangeShards = { [key in Exchange]?: Shard[] };
-
-export async function downloadAllShards(clientSetting: ClientSetting, setting: FilterSetting): Promise<ExchangeShards> {
-  const entries = Object.entries(setting.filter) as [Exchange, string[]][];
+async function downloadAllShards(clientSetting: ClientSetting, setting: FilterSetting): Promise<ExchangeShards> {
+  const entries = Object.entries(setting.filter);
   // initialize an array to store all shards
   const map: ExchangeShards = Object.fromEntries(entries.map(([exchange]) => [exchange, []]));
 
@@ -207,4 +66,55 @@ export async function downloadAllShards(clientSetting: ClientSetting, setting: F
   return map;
 }
 
-export ShardIterator 
+export async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<FilterLine[]> {
+  // download all shards, returns an array of shards for each exchange
+  const map = await downloadAllShards(clientSetting, setting);
+  // stores iterator and last line for each exchange
+  const states: {
+    [key: string]: {
+      iterator: Iterator<FilterLine>;
+      lastLine: FilterLine;
+    };
+  } = {};
+  const exchanges: string[] = [];
+  for (const [exchange, shards] of Object.entries(map)) {
+    const itr = new DownloadedShardsIterator(shards);
+    const next = itr.next();
+    // if there was no line, ignore this exchange's shards
+    if (!next.done) {
+      states[exchange] = { iterator: itr, lastLine: next.value };
+      exchanges.push(exchange);
+    }
+  }
+
+  /* it needs to process lines so that it becomes a single array */
+  // array to store the result
+  const array: FilterLine[] = []
+  while (exchanges.length > 0) {
+    // have to set initial value to calculate minimun value
+    let argmin: number = exchanges.length-1;
+    const tmpLine = states[exchanges[argmin]].lastLine;
+    let min: bigint = tmpLine.timestamp;
+    // must start from the end because it needs to remove its elements
+    for (let i = exchanges.length - 2; i >= 0; i--) {
+      const exchange = exchanges[i];
+      const line = states[exchange].lastLine;
+      if (line.timestamp < min) {
+        min = line.timestamp;
+        argmin = i;
+      }
+    }
+    const state = states[exchanges[argmin]];
+    // push the line
+    array.push(state.lastLine);
+    // find the next line for this exchange, if does not exist, remove the exchange
+    const next = state.iterator.next();
+    if (next.done) {
+      // next line is absent
+      exchanges.splice(argmin, 1);
+    }
+    state.lastLine = next.value;
+  }
+
+  return array;
+}

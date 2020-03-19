@@ -30,7 +30,7 @@ export class StreamShardIterator implements AsyncIterator<Shard> {
     // push empty slot to represent shard downloading
     const slot: ShardSlot = {};
     this.buffer.push(slot);
-    downloadShard(this.clientSetting, this.filterSetting, this.nextDownloadMinute).then((shard) => {
+    downloadShard(this.clientSetting, this.filterSetting.ex, this.nextDownloadMinute).then((shard) => {
       // once downloaded, set instance of shard
       slot.shard = shard;
       if (this.notifier !== null) {
