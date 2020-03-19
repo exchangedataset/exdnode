@@ -6,11 +6,12 @@ export function encodeBase64(buffer: Buffer): string {
 }
 
 export function decodeBase64(encoded: string): Buffer {
-  const str = Array(5 - (encoded.length % 4)).join('=')
+  const normal = encoded + Array(5 - (encoded.length % 4)).fill('=');
+  const base64 = normal
     .replace(/-/g, '+')
     .replace(/_/g, '/');
 
-  return Buffer.from(str, 'base64');
+  return Buffer.from(base64, 'base64');
 }
 
 export function validateBase64(str: string): boolean {
