@@ -11,7 +11,7 @@ class ShardsLineIterator implements Iterator<FilterLine> {
 
   public next(): IteratorResult<FilterLine> {
     // find the line to return
-    while (this.shards.length > 0 && this.shards[0].length < this.position) {
+    while (this.shards.length > 0 && this.shards[0].length <= this.position) {
       // this shard is all read
       this.shards.shift();
       this.position = 0;
@@ -61,7 +61,13 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: FilterSe
   }
 
   // wait download and processing of all shards
-  await Promise.all(proms);
+  const result = await Promise.all(proms);
+
+  // set shards to map from array index
+  for (let i = 0; i < entries.length; i++) {
+    const [exchange] = entries[i];
+    map[exchange] = result[i];
+  }
 
   return map;
 }

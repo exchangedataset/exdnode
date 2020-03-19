@@ -1,8 +1,8 @@
-import { ClientSetting } from "../client/impl";
-import { downloadShard } from "./common";
-import { Shard } from "./impl";
-import { FILTER_DEFAULT_BUFFER_SIZE } from "../variables";
-import { convertNanosecToMinute } from "../utils/datetime";
+import { ClientSetting } from "../../client/impl";
+import { downloadShard } from "../common";
+import { Shard } from "../impl";
+import { FILTER_DEFAULT_BUFFER_SIZE } from "../../variables";
+import { convertNanosecToMinute } from "../../utils/datetime";
 
 type ShardSlot = { shard?: Shard };
 type Notifier = (err?: Error) => void;

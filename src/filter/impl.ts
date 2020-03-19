@@ -1,11 +1,11 @@
-import { FilterLine, FilterRequest, FilterParam } from "./filter";
+import { FilterLine, FilterRequest, FilterParam, Filter } from "./filter";
 import { convertDatetimeParam } from "../utils/datetime";
 import { ClientSetting } from "../client/impl";
 import filterDownload from "./download";
-import StreamIterator from "./stream_iterator";
+import StreamIterator from "./stream/iterator";
 
 export type FilterSetting = {
-  filter: { string: string[] };
+  filter: Filter;
   start: bigint;
   end: bigint;
 }

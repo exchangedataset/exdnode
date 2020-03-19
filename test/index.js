@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { createClient } = require('../lib/index');
+const { createClient, filterBuilder, filterBitmex } = require('../lib/index');
 
 const APIKEY = 'cGpvbmtRZnF1ZGdidTJMM0dPQTY4TWw1dFl1bHNXTks';
 
@@ -17,22 +17,33 @@ describe('Client', function() {
     });
   });
 });
-
+describe('FilterBuilder', function() {
+  it('build filter', function() {
+    const params = {
+      filter: filterBuilder().bitmex(filterBitmex().orderBookL2().build()).build(),
+    }
+    console.log(params);
+    
+  });
+})
+/*
 describe('FilterRequest', function() {
   const client = createClient({ apikey: APIKEY });
   const params = {
-    exchange: 'bitmex',
+    filter: {
+      'bitmex': ['orderBookL2']
+    },
     start: 26375331,
     end: 26375331,
-    channels: ['orderBookL2'],
   };
   const truncate = {
-    exchange: 'bitmex',
+    filter: {
+      'bitmex': ['orderBookL2']
+    },
     // cut 20 seconds after the beginning of shard
     start: (26375331n * 60n + 20n) * 1000000000n,
     // truncate 25 seconds before end of shard
     end: (26375332n * 60n - 25n) * 1000000000n,
-    channels: ['orderBookL2'],
   };
   let downloadParams = [];
   let downloadTruncate = [];
@@ -82,3 +93,4 @@ describe('FilterRequest', function() {
     });
   });
 });
+*/

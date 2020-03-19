@@ -1,7 +1,7 @@
-import { FilterLine } from "./filter";
-import { ClientSetting } from "../client/impl";
-import { FilterSetting } from "./impl";
-import StreamExchangeIterator from "./stream_exchange_iterator";
+import { FilterLine } from "../filter";
+import { ClientSetting } from "../../client/impl";
+import { FilterSetting } from "../impl";
+import StreamExchangeIterator from "./exchange_iterator";
 
 export default class StreamIterator implements AsyncIterator<FilterLine> {
   private states: {
@@ -45,7 +45,7 @@ export default class StreamIterator implements AsyncIterator<FilterLine> {
     // return the line that has the smallest timestamp of all shards of each exchange
     let argmin = this.exchanges.length - 1;
     let min = this.states[this.exchanges[argmin]].lastLine.timestamp;
-    for (let i = this.exchanges.length - 1; i >= 0; i--) {
+    for (let i = this.exchanges.length - 2; i >= 0; i--) {
       const lastLine = this.states[this.exchanges[i]].lastLine;
       if (lastLine.timestamp < min) {
         argmin = i;
