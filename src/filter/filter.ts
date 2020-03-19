@@ -1,14 +1,15 @@
+import moment = require('moment');
+
 import { ClientParam } from '../client/client';
 import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
 import { setupSetting as setupClientSetting } from '../client/impl';
 
-import moment = require('moment');
+export type Filter = { [key: string]: string[] };
 
 export type FilterParam = {
-  exchange: string;
+  filter: Filter;
   start: string | Date | number | moment.Moment;
   end: string | Date | number | moment.Moment;
-  channels: string[];
 }
 
 /**
@@ -116,3 +117,5 @@ export interface FilterRequest {
 export function filter(clientParams: ClientParam, params: FilterParam): FilterRequest {
   return new FilterRequestImpl(setupClientSetting(clientParams), setupFilterSetting(params));
 }
+
+export * from './builder/builder';

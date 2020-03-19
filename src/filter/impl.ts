@@ -1,14 +1,13 @@
-import { FilterLine, FilterRequest, FilterParam } from "./filter";
+import { FilterLine, FilterRequest, FilterParam, Filter } from "./filter";
 import { convertNanosecToMinute, convertDatetimeParam } from "../utils/datetime";
 import { downloadShard } from "./common";
 import FilterStreamIterator from "./stream_iterator";
 import { ClientSetting } from "../client/impl";
 
 export type FilterSetting = {
-  exchange: string;
+  filter: Filter;
   start: bigint;
   end: bigint;
-  channels: string[];
 }
 
 export function setupSetting(params: FilterParam): FilterSetting {
@@ -22,12 +21,14 @@ export function setupSetting(params: FilterParam): FilterSetting {
   // end in nanosec is exclusive
   end -= BigInt('1');
 
+  // deep copy filter parameter
+  const filter = JSON.parse(JSON.stringify(params.filter));
+
   // must return new object so it won't be modified externally
   return {
-    exchange: params.exchange,
+    filter,
     start,
     end,
-    channels: params.channels.slice(0),
   };
 }
 
