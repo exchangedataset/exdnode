@@ -1,7 +1,7 @@
 import { FilterLine } from './filter';
 import { ClientSetting } from '../client/impl';
-import { FilterSetting } from './impl';
-import { Shard, ShardIterator } from './shard_iterator';
+import { FilterSetting, Shard } from './impl';
+import { StreamShardIterator } from './stream_shard_iterator';
 
 export default class FilterStreamIterator implements AsyncIterator<FilterLine> {
   private shardIterator: AsyncIterator<Shard>;
@@ -13,7 +13,7 @@ export default class FilterStreamIterator implements AsyncIterator<FilterLine> {
     filterSetting: FilterSetting,
     bufferSize?: number,
   ) {
-    this.shardIterator = new ShardIterator(clientSetting, filterSetting, bufferSize);
+    this.shardIterator = new StreamShardIterator(clientSetting, filterSetting, bufferSize);
     this.itrNext = null;
     this.position = 0;
   }

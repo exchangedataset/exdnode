@@ -4,8 +4,8 @@ import { ClientParam } from '../client/client';
 import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
 import { setupSetting as setupClientSetting } from '../client/impl';
 
-export type Filter = { [key: string]: string[] };
-
+export type Exchange = 'bitmex' | 'bitfinex' | 'bitflyer';
+export type Filter = { [key in Exchange]?: string[] };
 export type FilterParam = {
   filter: Filter;
   start: string | Date | number | moment.Moment;
@@ -31,12 +31,16 @@ export enum LineType {
 /**
  * Data structure of a single line from a filter response.
  *
- * `type` and `timestamp` is always present, **but `channel` or `message` is not.**
+ * `exchange`, `type` and `timestamp` is always present, **but `channel` or `message` is not.**
  * This is because with certain `type`, a line might not contain `channel` or `message`, or both.
  *
  * @see FilterLine.type
  */
 export type FilterLine = {
+  /**
+   * Exchange on which this line is recorded.
+   */
+  exchange: Exchange;
   /**
    * If `type === LineType.MESSAGE`, then a line is a normal message.
    * All of value are present.

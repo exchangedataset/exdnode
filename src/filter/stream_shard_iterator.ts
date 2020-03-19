@@ -1,15 +1,13 @@
 import { ClientSetting } from "../client/impl";
 import { downloadShard } from "./common";
-import { FilterSetting } from "./impl";
-import { FilterLine } from "./filter";
+import { FilterSetting, Shard } from "./impl";
 import { FILTER_DEFAULT_BUFFER_SIZE } from "../variables";
 import { convertNanosecToMinute } from "../utils/datetime";
 
-export type Shard = FilterLine[];
 type ShardSlot = { shard?: Shard };
 type Notifier = (err?: Error) => void;
 
-export class ShardIterator implements AsyncIterator<Shard> {
+export class StreamShardIterator implements AsyncIterator<Shard> {
   // fill buffer with null value (means not downloaded)
   private buffer: ShardSlot[] = [];
   private notifier: Notifier | null = null;

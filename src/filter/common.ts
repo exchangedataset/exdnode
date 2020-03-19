@@ -69,7 +69,10 @@ async function readLines(setting: FilterSetting, stream: NodeJS.ReadableStream):
 
 export async function downloadShard(
   clientSetting: ClientSetting,
-  filterSetting: FilterSetting,
+  exchange: string,
+  ,
+  start: bigint,
+  end: bigint,
   minute: number,
 ): Promise<FilterLine[]> {
   const res = await httpsGet(
