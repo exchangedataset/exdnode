@@ -4,7 +4,6 @@ import { ClientParam } from '../client/client';
 import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
 import { setupSetting as setupClientSetting } from '../client/impl';
 
-export type Exchange = 'bitmex' | 'bitfinex' | 'bitflyer';
 export type FilterParam = {
   filter: { string: string[] };
   start: string | Date | number | moment.Moment;

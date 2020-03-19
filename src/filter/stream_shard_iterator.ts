@@ -1,13 +1,13 @@
 import { ClientSetting } from "../client/impl";
 import { downloadShard } from "./common";
-import { FilterSetting, Shard } from "./impl";
+import { Shard } from "./impl";
 import { FILTER_DEFAULT_BUFFER_SIZE } from "../variables";
 import { convertNanosecToMinute } from "../utils/datetime";
 
 type ShardSlot = { shard?: Shard };
 type Notifier = (err?: Error) => void;
 
-export class StreamShardIterator implements AsyncIterator<Shard> {
+export default class StreamShardIterator implements AsyncIterator<Shard> {
   // fill buffer with null value (means not downloaded)
   private buffer: ShardSlot[] = [];
   private notifier: Notifier | null = null;
@@ -17,11 +17,14 @@ export class StreamShardIterator implements AsyncIterator<Shard> {
 
   constructor(
     private clientSetting: ClientSetting,
-    private filterSetting: FilterSetting,
+    private exchange: string,
+    private channels: string[],
+    private start: bigint,
+    private end: bigint,
     bufferSize: number = FILTER_DEFAULT_BUFFER_SIZE,
   ) {
-    this.nextDownloadMinute = convertNanosecToMinute(filterSetting.start);
-    this.endMinute = convertNanosecToMinute(filterSetting.end);
+    this.nextDownloadMinute = convertNanosecToMinute(start);
+    this.endMinute = convertNanosecToMinute(end);
     // start downloading shards to fill buffer
     for (let i = 0; i < bufferSize && this.nextDownloadMinute <= this.endMinute; i += 1) this.downloadNewShard();
   }
@@ -30,7 +33,7 @@ export class StreamShardIterator implements AsyncIterator<Shard> {
     // push empty slot to represent shard downloading
     const slot: ShardSlot = {};
     this.buffer.push(slot);
-    downloadShard(this.clientSetting, this.filterSetting.ex, this.nextDownloadMinute).then((shard) => {
+    downloadShard(this.clientSetting, this.exchange, this.channels, this.start, this.end, this.nextDownloadMinute).then((shard) => {
       // once downloaded, set instance of shard
       slot.shard = shard;
       if (this.notifier !== null) {

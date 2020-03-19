@@ -1,9 +1,8 @@
-import { FilterLine, FilterRequest, FilterParam, Exchange } from "./filter";
-import { convertNanosecToMinute, convertDatetimeParam } from "../utils/datetime";
-import { downloadShard } from "./common";
-import FilterStreamIterator from "./stream_iterator";
+import { FilterLine, FilterRequest, FilterParam } from "./filter";
+import { convertDatetimeParam } from "../utils/datetime";
 import { ClientSetting } from "../client/impl";
-import { downloadAllShards, DownloadedShardsIterator, filterDownload } from "./download";
+import filterDownload from "./download";
+import StreamIterator from "./stream_iterator";
 
 export type FilterSetting = {
   filter: { string: string[] };
@@ -46,7 +45,7 @@ export class FilterRequestImpl implements FilterRequest {
     const setting = this.setting;
     return {
       [Symbol.asyncIterator](): AsyncIterator<FilterLine> {
-        return new FilterStreamIterator(clientSetting, setting, bufferSize);
+        return new StreamIterator(clientSetting, setting, bufferSize);
       },
     };
   }

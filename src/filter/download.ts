@@ -4,7 +4,7 @@ import { FilterSetting, Shard } from "./impl";
 import { convertNanosecToMinute } from "../utils/datetime";
 import { downloadShard } from "./common";
 
-export class DownloadedShardsIterator implements Iterator<FilterLine> {
+class ShardsLineIterator implements Iterator<FilterLine> {
   private position = 0;
 
   constructor(private shards: Shard[]) {}
@@ -66,7 +66,7 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: FilterSe
   return map;
 }
 
-export async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<FilterLine[]> {
+export default async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<FilterLine[]> {
   // download all shards, returns an array of shards for each exchange
   const map = await downloadAllShards(clientSetting, setting);
   // stores iterator and last line for each exchange
@@ -78,7 +78,7 @@ export async function filterDownload(clientSetting: ClientSetting, setting: Filt
   } = {};
   const exchanges: string[] = [];
   for (const [exchange, shards] of Object.entries(map)) {
-    const itr = new DownloadedShardsIterator(shards);
+    const itr = new ShardsLineIterator(shards);
     const next = itr.next();
     // if there was no line, ignore this exchange's shards
     if (!next.done) {
