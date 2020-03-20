@@ -16,7 +16,7 @@ import { AnyDateInstance } from '../../utils/datetime';
  * - {@link asFormatted()} to get results in a formatted version
  * Or, you can get `FilterRequest` by {@link configure()} providing config by {@link FilterParam} object.
  */
-export default interface FilterRequestBuilder {
+export interface FilterRequestBuilder {
   /**
    * Adds what channels of Bitmex exchange to filter-in.
    * 

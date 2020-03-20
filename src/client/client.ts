@@ -1,5 +1,5 @@
 import { ClientImpl, setupSetting } from './impl';
-import FilterRequestBuilder from '../filter/request/builder';
+import { FilterRequestBuilder } from '../filter/request/builder';
 
 /**
  * Config for making new client.

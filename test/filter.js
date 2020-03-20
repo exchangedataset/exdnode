@@ -1,32 +1,7 @@
 const assert = require('assert');
-const { createClient, filterBuilder, filterBitmex } = require('../lib/index');
+const { createClient } = require('../lib/index');
+const { APIKEY } = require('./constants');
 
-const APIKEY = 'cGpvbmtRZnF1ZGdidTJMM0dPQTY4TWw1dFl1bHNXTks';
-
-describe('Client', function() {
-  describe('createClient', function() {
-    it('should not throw when a valid API key is given', function() {
-      assert.doesNotThrow(function() {
-        createClient({ apikey: APIKEY });
-      });
-    });
-    it('should throw when a INVALID API key is given', function() {
-      assert.throws(function() {
-        createClient({ apikey: 'this is invalid' })
-      });
-    });
-  });
-});
-describe('FilterBuilder', function() {
-  it('build filter', function() {
-    const params = {
-      filter: filterBuilder().bitmex(filterBitmex().orderBookL2().build()).build(),
-    }
-    console.log(params);
-    
-  });
-})
-/*
 describe('FilterRequest', function() {
   const client = createClient({ apikey: APIKEY });
   const params = {
@@ -93,4 +68,3 @@ describe('FilterRequest', function() {
     });
   });
 });
-*/

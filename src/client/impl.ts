@@ -7,7 +7,7 @@ import { validateBase64 } from '../utils/base64';
 import { CLIENT_DEFAULT_TIMEOUT } from '../constants';
 import { ClientParam, Client } from './client';
 import { FilterRequestBuilderImpl } from '../filter/request/builder.impl';
-import FilterRequestBuilder from '../filter/request/builder';
+import { FilterRequestBuilder } from '../filter/request/builder';
 
 export type ClientSetting = {
   apikey: string;

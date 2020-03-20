@@ -8,7 +8,7 @@ import { ClientSetting } from "../../client/impl";
 import { FilterRequest } from "./request";
 import { FilterRequestImpl, setupSetting } from "./request.impl";
 import { FilterParam } from "../filter";
-import FilterRequestBuilder from "./builder";
+import { FilterRequestBuilder } from "./builder";
 
 export class FilterRequestBuilderImpl implements FilterRequestBuilder {
   private config: { [key: string]: any };
