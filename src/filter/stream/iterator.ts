@@ -1,6 +1,11 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import { FilterLine } from "../filter";
 import { ClientSetting } from "../../client/impl";
-import { FilterSetting } from "../impl";
+import { FilterSetting } from "../request/request.impl";
 import StreamExchangeIterator from "./exchange_iterator";
 
 export default class StreamIterator implements AsyncIterator<FilterLine> {

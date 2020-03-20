@@ -1,8 +1,13 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import { validateBase64 } from '../utils/base64';
-import { CLIENT_DEFAULT_TIMEOUT } from '../variables';
+import { CLIENT_DEFAULT_TIMEOUT } from '../constants';
 import { ClientParam, Client } from './client';
-import { FilterRequest, FilterParam } from '../filter/filter';
-import { FilterRequestImpl, setupSetting as setupFilterSetting } from '../filter/impl';
+import { FilterRequestBuilderImpl } from '../filter/request/builder.impl';
+import FilterRequestBuilder from '../filter/request/builder';
 
 export type ClientSetting = {
   apikey: string;
@@ -28,7 +33,7 @@ export function setupSetting(reference: ClientParam): ClientSetting {
 export class ClientImpl implements Client {
   constructor(private setting: ClientSetting) {}
 
-  filter(params: FilterParam): FilterRequest {
-    return new FilterRequestImpl(this.setting, setupFilterSetting(params));
+  filter(): FilterRequestBuilder {
+    return new FilterRequestBuilderImpl(this.setting);
   }
 }

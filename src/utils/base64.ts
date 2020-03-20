@@ -1,3 +1,8 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 export function encodeBase64(buffer: Buffer): string {
   return buffer.toString('base64')
     .replace(/\+/g, '-')

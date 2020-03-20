@@ -1,8 +1,8 @@
-import { FilterRequest, FilterParam } from '../filter/filter';
 import { ClientImpl, setupSetting } from './impl';
+import FilterRequestBuilder from '../filter/request/builder';
 
 /**
- * Settings for client.
+ * Config for making new client.
  */
 export type ClientParam = {
   /**
@@ -16,22 +16,19 @@ export type ClientParam = {
 }
 
 /**
- * By using Client, you don't have to provide {@link ClientParam} for every API call.
+ * Client eliminates the neccesity of providing {@link ClientParam} for every API call.
  */
 export interface Client {
-  filter(params: FilterParam): FilterRequest;
+  filter(): FilterRequestBuilder;
 }
 
 /**
- * Create new Client class instance and returns it.
- *
- * This is identical to `new Client(ClientParam)`.
- *
- * @param params Setting to be used in the client instance.
- * @returns Created client with setting specified with `setting` parameter.
+ * Creates new Client class instance and returns it.
+ * @param config Config to be used in the client instance.
+ * @returns Created client with config specified with `config` parameter.
  * @see ClientParam
  */
-export function createClient(params: ClientParam): Client {
-  const setting = setupSetting(params);
+export function createClient(config: ClientParam): Client {
+  const setting = setupSetting(config);
   return new ClientImpl(setting);
 }

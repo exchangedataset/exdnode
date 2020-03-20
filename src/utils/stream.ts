@@ -1,8 +1,13 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import https from 'https';
 import querystring, { ParsedUrlQueryInput } from 'querystring';
 import { IncomingMessage } from 'http';
 
-import { URL_API } from '../variables';
+import { URL_API } from '../constants';
 import { ClientSetting } from '../client/impl';
 
 /**

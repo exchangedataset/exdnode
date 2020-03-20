@@ -1,3 +1,8 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import readline from 'readline';
 
 import { readString, httpsGet } from '../utils/stream';

@@ -1,4 +1,11 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import moment from 'moment';
+
+export type AnyDateInstance = string | Date | number | moment.Moment;
 
 export function convertNanosecToMinute(nanosec: bigint): number {
   return Number.parseInt((nanosec / BigInt('60') / BigInt('1000000000')).toString(), 10);

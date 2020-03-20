@@ -27,6 +27,9 @@ export interface FilterBitfinexChannelsBuilder {
   build(): string[];
 }
 
+/**
+ * @internal
+ */
 class Impl implements FilterBitfinexChannelsBuilder {
   private stored: string[];
 

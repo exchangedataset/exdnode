@@ -1,6 +1,11 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import { FilterLine } from '../filter';
 import { ClientSetting } from '../../client/impl';
-import { Shard } from '../impl';
+import { Shard } from '../request/request.impl';
 import StreamShardIterator from './shard_iterator';
 
 export default class StreamExchangeIterator implements AsyncIterator<FilterLine> {

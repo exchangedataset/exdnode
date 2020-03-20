@@ -1,6 +1,11 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import { ClientSetting } from "../client/impl";
 import { FilterLine } from "./filter";
-import { FilterSetting, Shard } from "./impl";
+import { FilterSetting, Shard } from "./request/request.impl";
 import { convertNanosecToMinute } from "../utils/datetime";
 import { downloadShard } from "./common";
 

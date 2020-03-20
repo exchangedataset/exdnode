@@ -70,6 +70,9 @@ export interface FilterBitmexChannelsBuilder {
   build(): string[];
 }
 
+/**
+ * @internal
+ */
 class Impl implements FilterBitmexChannelsBuilder {
   private stored: string[];
 

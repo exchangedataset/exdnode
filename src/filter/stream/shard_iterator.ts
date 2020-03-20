@@ -1,7 +1,12 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import { ClientSetting } from "../../client/impl";
 import { downloadShard } from "../common";
-import { Shard } from "../impl";
-import { FILTER_DEFAULT_BUFFER_SIZE } from "../../variables";
+import { Shard } from "../request/request.impl";
+import { FILTER_DEFAULT_BUFFER_SIZE } from "../../constants";
 import { convertNanosecToMinute } from "../../utils/datetime";
 
 type ShardSlot = { shard?: Shard };

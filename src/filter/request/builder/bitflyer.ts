@@ -37,6 +37,9 @@ export interface FilterBitflyerChannelsBuilder {
   build(): string[];
 }
 
+/**
+ * @internal
+ */
 class Impl implements FilterBitflyerChannelsBuilder {
   private stored: string[];
 
