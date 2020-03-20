@@ -1,16 +1,14 @@
-export type BitfinexPairs = 'tBTC_USD' | 'tETH_USD' | 'USTUSD' | 'tEOSUSD' | 'tBCHUSD' | 'tXRPUSD' | 'tLTCUSD';
-
 export interface FilterBitfinexChannelsBuilder {
   /**
    * Trades of specified pairs.
    * @param pairs Pairs to filter-in
    */
-  trades(...pairs: BitfinexPairs[]): FilterBitfinexChannelsBuilder;
+  trades(pairs: string[]): FilterBitfinexChannelsBuilder;
   /**
    * L2 book of specified pairs.
    * @param pairs Pairs to filter-in
    */
-  book(...pairs: BitfinexPairs[]): FilterBitfinexChannelsBuilder;
+  book(pairs: string[]): FilterBitfinexChannelsBuilder;
   /**
    * Add an arbitrary channels.
    * Duplicate entry will be aggregated.
@@ -18,7 +16,7 @@ export interface FilterBitfinexChannelsBuilder {
    * Note that channels that does not included in this builder might not be supported by Exchangedataset API.
    * @returns this
    */
-  channels(...chs: string[]): FilterBitfinexChannelsBuilder;
+  channels(chs: string[]): FilterBitfinexChannelsBuilder;
   /**
    * Build this bulder to get channels.
    * Can be called more than once.
@@ -37,18 +35,17 @@ class Impl implements FilterBitfinexChannelsBuilder {
     this.stored = [];
   }
 
-  trades(...pairs: string[]): FilterBitfinexChannelsBuilder {
+  trades(pairs: string[]): FilterBitfinexChannelsBuilder {
     const chs = pairs.map((pair) => `trades_${pair}`);
-    return this.channels(...chs);
+    return this.channels(chs);
   }
-  book(...pairs: string[]): FilterBitfinexChannelsBuilder {
+  book(pairs: string[]): FilterBitfinexChannelsBuilder {
     const chs = pairs.map((pair) => `book_${pair}`);
-    return this.channels(...chs);
+    return this.channels(chs);
   }
 
-  channels(...chs: string[]): FilterBitfinexChannelsBuilder {
-    const noduplicate = chs.filter((ch) => !(ch in this.channels));
-    this.stored.push(...noduplicate);
+  channels(chs: string[]): FilterBitfinexChannelsBuilder {
+    this.stored.push(...chs);
     return this;
   }
 

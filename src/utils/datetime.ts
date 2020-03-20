@@ -30,9 +30,11 @@ export function convertDatetimeParam(
     // minute in integer form
     if (!Number.isInteger(tmp)) throw TypeError('Parameter "datetime" as minutes must be an integer');
     unixtime = tmp * 60;
-  } else {
+  } else if ('unix' in tmp) {
     // must be moment.Moment
     unixtime = tmp.unix();
+  } else {
+    throw new Error('Object supplied is not supported as date-like object');
   }
   return BigInt(unixtime) * BigInt('1000000000');
 }

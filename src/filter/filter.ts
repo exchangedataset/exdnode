@@ -9,6 +9,7 @@ export type FilterParam = {
   filter: Filter;
   start: AnyDateInstance;
   end: AnyDateInstance;
+  format: string;
 }
 
 /**

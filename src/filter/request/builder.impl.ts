@@ -15,7 +15,7 @@ export class FilterRequestBuilderImpl implements FilterRequestBuilder {
 
   constructor(private clientSetting: ClientSetting) {
     // initialize filter
-    this.config = {};
+    this.config = { filter: {} };
   }
 
   build(): FilterRequest {
@@ -38,13 +38,10 @@ export class FilterRequestBuilderImpl implements FilterRequestBuilder {
 
   exchange(exchangeName: string, channels: string[]): FilterRequestBuilder {
     if (!(exchangeName in this.config)) {
-      this.config[exchangeName] = channels;
+      this.config.filter[exchangeName] = channels;
       return this;
     }
-    // channels for this exchange are already pushed, add channles to it
-    // remove duplicate from channels parameter
-    const noduplicate = channels.filter((ch) => !(ch in this.config.channels));
-    this.config.channels.push(...noduplicate);
+    this.config.filter[exchangeName].push(...channels);
     return this;
   }
   start(date: AnyDateInstance): FilterRequestBuilder {
@@ -55,16 +52,16 @@ export class FilterRequestBuilderImpl implements FilterRequestBuilder {
     this.config.end = date;
     return this;
   }
-  range(start: AnyDateInstance, end: AnyDateInstance): FilterRequestBuilder {
-    return this.start(start).end(end);
+  range(start: AnyDateInstance, end?: AnyDateInstance): FilterRequestBuilder {
+    return this.start(start).end(typeof end === 'undefined' ? start : end);
   }
 
   asRaw(): FilterRequest {
-    this.config.formatted = 'none';
+    this.config.format = 'none';
     return this.configure(this.config as FilterParam);
   }
-  asFormatted(): FilterRequest {
-    this.config.formatted = 'csvlike';
+  asCSVLike(): FilterRequest {
+    this.config.format = 'csvlike';
     return this.configure(this.config as FilterParam);
   }
   configure(params: FilterParam): FilterRequest {

@@ -61,7 +61,7 @@ export interface FilterBitmexChannelsBuilder {
    * Note that channels that does not included in this builder might not be supported by Exchangedataset API.
    * @returns this
    */
-  channels(...chs: string[]): FilterBitmexChannelsBuilder;
+  channels(chs: string[]): FilterBitmexChannelsBuilder;
   /**
    * Build this bulder to get channels.
    * Can be called more than once.
@@ -80,21 +80,20 @@ class Impl implements FilterBitmexChannelsBuilder {
     this.stored = [];
   }
 
-  announcement(): FilterBitmexChannelsBuilder { return this.channels('announcement'); }
-  chat(): FilterBitmexChannelsBuilder { return this.channels('chat'); }
-  connected(): FilterBitmexChannelsBuilder { return this.channels('connected'); }
-  funding(): FilterBitmexChannelsBuilder { return this.channels('funding'); }
-  instrument(): FilterBitmexChannelsBuilder { return this.channels('instrument'); }
-  insurance(): FilterBitmexChannelsBuilder { return this.channels('insurance'); }
-  liquidation(): FilterBitmexChannelsBuilder { return this.channels('liquidation'); }
-  orderBookL2(): FilterBitmexChannelsBuilder { return this.channels('orderBookL2'); }
-  publicNotifications(): FilterBitmexChannelsBuilder { return this.channels('publicNotifications'); }
-  settlement(): FilterBitmexChannelsBuilder { return this.channels('settlement'); }
-  trade(): FilterBitmexChannelsBuilder { return this.channels('trade'); }
+  announcement(): FilterBitmexChannelsBuilder { return this.channels(['announcement']); }
+  chat(): FilterBitmexChannelsBuilder { return this.channels(['chat']); }
+  connected(): FilterBitmexChannelsBuilder { return this.channels(['connected']); }
+  funding(): FilterBitmexChannelsBuilder { return this.channels(['funding']); }
+  instrument(): FilterBitmexChannelsBuilder { return this.channels(['instrument']); }
+  insurance(): FilterBitmexChannelsBuilder { return this.channels(['insurance']); }
+  liquidation(): FilterBitmexChannelsBuilder { return this.channels(['liquidation']); }
+  orderBookL2(): FilterBitmexChannelsBuilder { return this.channels(['orderBookL2']); }
+  publicNotifications(): FilterBitmexChannelsBuilder { return this.channels(['publicNotifications']); }
+  settlement(): FilterBitmexChannelsBuilder { return this.channels(['settlement']); }
+  trade(): FilterBitmexChannelsBuilder { return this.channels(['trade']); }
 
-  channels(...chs: string[]): FilterBitmexChannelsBuilder {
-    const noduplicate = chs.filter((ch) => !(ch in this.channels));
-    this.stored.push(...noduplicate);
+  channels(chs: string[]): FilterBitmexChannelsBuilder {
+    this.stored.push(...chs);
     return this;
   }
 

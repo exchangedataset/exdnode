@@ -13,7 +13,7 @@ import { AnyDateInstance } from '../../utils/datetime';
  * 
  * Get `FilterRequest` by specifing the data format either by calling
  * - {@link asRaw()} to get results in a raw format which format is specific to each exchange
- * - {@link asFormatted()} to get results in a formatted version
+ * - {@link asCSVLike()} to get results in a csv-like formatted version
  * Or, you can get `FilterRequest` by {@link configure()} providing config by {@link FilterParam} object.
  */
 export interface FilterRequestBuilder {
@@ -80,12 +80,12 @@ export interface FilterRequestBuilder {
    * Set the start and end date and time of filtering.
    * 
    * @param start Various date like instance
-   * @param end Various date like instance
+   * @param end Various date like instance, if not provided, `start` will be used.
    * @see start
    * @see end
    * @see AnyDateInstance
    */
-  range(start: AnyDateInstance, end: AnyDateInstance): FilterRequestBuilder;
+  range(start: AnyDateInstance, end?: AnyDateInstance): FilterRequestBuilder;
   /**
    * Build this and get `FilterRequest`.
    * You will get result in raw format that the exchanges are providing with.
@@ -95,7 +95,7 @@ export interface FilterRequestBuilder {
    * Build this and get `FilterRequest`.
    * You will get result formatted in csv-like structure.
    */
-  asFormatted(): FilterRequest;
+  asCSVLike(): FilterRequest;
   /**
    * Bypass builder with complete {@link FilterParam} object to set.
    */
