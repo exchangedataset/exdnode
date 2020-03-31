@@ -1,11 +1,11 @@
 {
-  "name": "exchangedataset-stream",
+  "name": "exchangedataset-node",
   "version": "1.0.0",
   "engines": {
     "node": ">=12"
   },
   "description": "Node.js version of Exchangedataset historical cryptocurrency market data streaming service",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "yarn run build && yarn mocha",
     "build": "tsc",

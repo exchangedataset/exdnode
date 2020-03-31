@@ -1,5 +1,5 @@
 import { ClientImpl, setupSetting } from './impl';
-import { FilterRequestBuilder } from '../filter/request/builder';
+import { HTTPModule } from '../http/http';
 
 /**
  * Config for making new client.
@@ -19,7 +19,10 @@ export type ClientParam = {
  * Client eliminates the neccesity of providing {@link ClientParam} for every API call.
  */
 export interface Client {
-  filter(): FilterRequestBuilder;
+  /**
+   * Low-level http call module.
+   */
+  http: HTTPModule;
 }
 
 /**

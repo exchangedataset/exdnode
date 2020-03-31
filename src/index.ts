@@ -1,2 +1,2 @@
 export * from './client/client';
-export * from './filter/filter';
+export * as http from './http/http';

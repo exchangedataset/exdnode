@@ -6,8 +6,8 @@
 import { validateBase64 } from '../utils/base64';
 import { CLIENT_DEFAULT_TIMEOUT } from '../constants';
 import { ClientParam, Client } from './client';
-import { FilterRequestBuilderImpl } from '../filter/request/builder.impl';
-import { FilterRequestBuilder } from '../filter/request/builder';
+import { HTTPModule } from '../http/http';
+import { HTTPModuleImpl } from '../http/snapshot/impl';
 
 export type ClientSetting = {
   apikey: string;
@@ -31,9 +31,9 @@ export function setupSetting(reference: ClientParam): ClientSetting {
 }
 
 export class ClientImpl implements Client {
-  constructor(private setting: ClientSetting) {}
+  public http: HTTPModule;
 
-  filter(): FilterRequestBuilder {
-    return new FilterRequestBuilderImpl(this.setting);
+  constructor(private setting: ClientSetting) {
+    this.http = new HTTPModuleImpl(setting);
   }
 }
