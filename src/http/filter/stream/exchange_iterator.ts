@@ -3,12 +3,12 @@
  * @packageDocumentation
  */
 
-import { FilterLine } from '../filter';
 import { ClientSetting } from '../../../client/impl';
 import { Shard } from '../impl';
 import StreamShardIterator from './shard_iterator';
+import { Line } from '../../../common/line';
 
-export default class StreamExchangeIterator implements AsyncIterator<FilterLine> {
+export default class StreamExchangeIterator implements AsyncIterator<Line> {
   private shardIterator: AsyncIterator<Shard>;
   private itrNext: IteratorResult<Shard> | null;
   private position: number;
@@ -26,7 +26,7 @@ export default class StreamExchangeIterator implements AsyncIterator<FilterLine>
     this.position = 0;
   }
 
-  async next(): Promise<IteratorResult<FilterLine>> {
+  async next(): Promise<IteratorResult<Line>> {
     if (this.itrNext === null) {
       // get very first shard
       this.itrNext = await this.shardIterator.next();

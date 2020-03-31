@@ -1,5 +1,6 @@
 import { ClientImpl, setupSetting } from './impl';
 import { HTTPModule } from '../http/http';
+import { RawRequest, RawRequestParam } from '../raw/raw';
 
 /**
  * Config for making new client.
@@ -23,6 +24,15 @@ export interface Client {
    * Low-level http call module.
    */
   http: HTTPModule;
+  /**
+   * Lower-level API that process data from Exchangedataset HTTP-API and
+   * generate raw (close to exchanges' format) data.
+   */
+  raw(param: RawRequestParam): RawRequest;
+  /**
+   * Module to replay market data.
+   */
+  replay(): ReplayRequestBuilder;
 }
 
 /**

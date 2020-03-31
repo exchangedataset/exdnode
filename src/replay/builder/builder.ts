@@ -1,8 +1,8 @@
-import { FilterRequest } from './../request';
-import { AnyDateInstance } from '../../../utils/datetime';
+import { AnyDateInstance } from '../../utils/datetime';
+import { ReplayRequestParam } from '../replay';
 
 /**
- * Builds `FilterRequest`.
+ * Builds {@link ReplayRequestParam}.
  * 
  * You must provide builder with
  * - Exchanges and its channels to filter-in by calling functions with exchange name
@@ -10,11 +10,11 @@ import { AnyDateInstance } from '../../../utils/datetime';
  * - Time range by functions `start` and `end` or `range` to set them both at the time.
  * - What data format to fetch.
  * 
- * Get `FilterRequest` by specifing the data format either by calling
+ * Get {@link ReplayRequestParam} by specifing the data format either by calling
  * - {@link asRaw()} to get results in a raw format which format is specific to each exchange
  * - {@link asCSVLike()} to get results in a csv-like formatted version
  */
-export interface FilterRequestBuilder {
+export interface ReplayRequestParamBuilder {
   /**
    * Adds what channels of Bitmex exchange to filter-in.
    * 
@@ -25,7 +25,7 @@ export interface FilterRequestBuilder {
    * 
    * @param channels Array of channels to filter-in
    */
-  bitmex(channels: string[]): FilterRequestBuilder;
+  bitmex(channels: string[]): ReplayRequestParamBuilder;
   /**
    * Adds what channels of Bitflyer exchange to filter-in.
    * 
@@ -36,7 +36,7 @@ export interface FilterRequestBuilder {
    * 
    * @param channels Array of channels to filter-in
    */
-  bitflyer(channels: string[]): FilterRequestBuilder;
+  bitflyer(channels: string[]): ReplayRequestParamBuilder;
   /**
    * Adds what channels of Bitflyer exchange to filter-in.
    * 
@@ -47,21 +47,21 @@ export interface FilterRequestBuilder {
    * 
    * @param channels Array of channels to filter-in
    */
-  bitfinex(channels: string[]): FilterRequestBuilder;
+  bitfinex(channels: string[]): ReplayRequestParamBuilder;
   /**
    * Adds filter of channels of arbitrary exchange.
    * 
    * Note that exchanges does not included as function might not be supported by Exchangedataset.
    * @param channels Array of channels to filter-in
    */
-  exchange(exchangeName: string, channels: string[]): FilterRequestBuilder;
+  exchange(exchangeName: string, channels: string[]): ReplayRequestParamBuilder;
   /**
    * Set the start date-time of filtering.
    * 
    * @param date Various date like instance
    * @see AnyDateInstance
    */
-  start(date: AnyDateInstance): FilterRequestBuilder;
+  start(date: AnyDateInstance): ReplayRequestParamBuilder;
   /**
    * Set the end date and time of filtering.
    * 
@@ -73,7 +73,7 @@ export interface FilterRequestBuilder {
    * `2020-03-20 08:16:59.999999999` is.
    * @param date Various date like instance
    */
-  end(date: AnyDateInstance): FilterRequestBuilder;
+  end(date: AnyDateInstance): ReplayRequestParamBuilder;
   /**
    * Set the start and end date and time of filtering.
    * 
@@ -83,17 +83,11 @@ export interface FilterRequestBuilder {
    * @see end
    * @see AnyDateInstance
    */
-  range(start: AnyDateInstance, end?: AnyDateInstance): FilterRequestBuilder;
+  range(start: AnyDateInstance, end?: AnyDateInstance): ReplayRequestParamBuilder;
   /**
-   * Build this and get `FilterRequest`.
-   * You will get result in raw format that the exchanges are providing with.
+   * Build this and get {@link ReplayRequestParam}.
    */
-  asRaw(): FilterRequest;
-  /**
-   * Build this and get `FilterRequest`.
-   * You will get result formatted in csv-like structure.
-   */
-  asCSVLike(): FilterRequest;
+  build(): ReplayRequestParam;
 }
 
 export * from './bitmex';

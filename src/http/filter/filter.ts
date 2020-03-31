@@ -1,14 +1,10 @@
 import { ClientParam } from '../../client/client';
 import { setupSetting as setupClientSetting } from '../../client/impl';
-import { FilterRequest } from './request';
 import { AnyDateInstance } from '../../utils/datetime';
-import { setupSetting as setupFilterSetting } from './impl';
-import { FilterRequestImpl } from './request.impl';
+import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
+import { Filter } from '../../common/param';
+import { Line } from '../../common/line';
 
-/**
- * Specify exchanges as key and their channels as an array of strings to filter.
- */
-export type Filter = { [key: string]: string[] };
 /**
  * Parameters to make new {@link FilterRequest}.
  */
@@ -32,104 +28,38 @@ export type FilterParam = {
 }
 
 /**
- * Enum of Line Type.
+ * Request to filter API.
  *
- * Line Type shows what type of a line it is, such as message line or start line.
- * Lines with different types contain different information and have to be treated differently.
- *
- * @see FilterLine
+ * You can pick the way to read the response:
+ * - {@link download} to immidiately start downloading the whole
+ * response as one array.
+ * - {@link stream} to return iterable object yields line by line.
  */
-export enum LineType {
+export interface FilterRequest {
   /**
-   * Message Line Type.
-   * 
-   * This is the most usual Line Type.
+   * Send request to server and store all it one array.
+   * @returns Promise of response in one array
    */
-  MESSAGE = 'msg',
-  /**
-   * Send Line Type.
-   * 
-   * Message send from one of our client when recording.
-   */
-  SEND = 'send',
-  /**
-   * Start Line Type.
-   * 
-   * Indicates the first line in the continuous recording.
-   */
-  START = 'start',
-  /**
-   * End Line Type.
-   * 
-   * Indicates the end line in the continuous recording.
-   */
-  END = 'end',
-  /**
-   * Error Line Type.
-   * 
-   * Used when error occurrs on recording.
-   * Used in both server-side error and client-side error.
-   */
-  ERROR = 'err',
-}
+  download(): Promise<Line[]>;
 
-/**
- * Data structure of a single line from a filter response.
- *
- * `exchange`, `type` and `timestamp` is always present, **but `channel` or `message` is not.**
- * This is because with certain `type`, a line might not contain `channel` or `message`, or both.
- *
- * @see FilterLine.type
- */
-export type FilterLine = {
   /**
-   * Exchange on which this line is recorded.
-   */
-  exchange: string;
-  /**
-   * If `type === LineType.MESSAGE`, then a line is a normal message.
-   * All of value are present.
-   * You can get an assosiated channel by `channel`, and its message by `message`.
+   * Send request to server and read response by streaming.
    *
-   * If `type === LineType.SEND`, then a line is a request server sent when the dataset was
-   * recorded.
-   * All of value are present, though you can ignore this line.
+   * Returns Iterable object yields response line by line.
+   * Can be iterated using for-async-of sentence.
+   * Iterator yields immidiately if a line is bufferred, waits for download if not avaliable.
    *
-   * If `type === LineType.START`, then a line marks the start of new continuous recording of the
-   * dataset.
-   * Only `channel` is not present. `message` is the URL which used to record the dataset.
-   * You might want to initialize your work since this essentially means new connection to
-   * exchange's API.
+   * **Please note that buffering won't start by calling this method,**
+   * **calling {@link AsyncIterable.[Symbol.asyncIterator]} will.**
    *
-   * If `type === LineType.END`, then a line marks the end of continuous recording of the dataset.
-   * Other than `type` and `timestamp` are not present.
-   * You might want to perform some functionality when the connection to exchange's API was lost.
+   * Higher responsiveness than {@link downloadAsArray} is expected as it does not have to wait for
+   * the entire data to be downloaded.
    *
-   * If `type === LineType.ERROR`, then a line contains error message when recording the dataset.
-   * Only `channel` is not present. `message` is the error message.
-   * You want to ignore this line.
-   *
-   * @see FilterLine
+   * @param bufferSize Desired buffer size to store streaming data.
+   * One dataset is equavalent to one minute. Optional.
+   * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
    */
-  type: LineType;
-  /**
-   * Timestamp in nano seconds in unixtime-compatible format (unixtime * 10^9 + nanosec-part)
-   * of this line was recorded.
-   * Timezone is UTC.
-   */
-  timestamp: bigint;
-  /**
-   * Channel name which this line is assosiated with.
-   * Can be `undefined` according to `type`.
-   * @see type
-   */
-  channel?: string;
-  /**
-   * Message.
-   * Can be `undefined` according to `type`.
-   * @see type
-   */
-  message?: string;
+  stream(bufferSize?: number): AsyncIterable<Line>;
 }
 
 /**
@@ -140,5 +70,3 @@ export type FilterLine = {
 export function filter(clientParams: ClientParam, params: FilterParam): FilterRequest {
   return new FilterRequestImpl(setupClientSetting(clientParams), setupFilterSetting(params));
 }
-
-export * from './request';

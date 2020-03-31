@@ -3,7 +3,7 @@
  */
 export type SnapshotResponse = {
   /**
-   * Exchange and its snapshot.
+   * Topic and its snapshot.
    */
   [key: string]: string;
 }

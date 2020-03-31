@@ -7,7 +7,9 @@ import { validateBase64 } from '../utils/base64';
 import { CLIENT_DEFAULT_TIMEOUT } from '../constants';
 import { ClientParam, Client } from './client';
 import { HTTPModule } from '../http/http';
-import { HTTPModuleImpl } from '../http/snapshot/impl';
+import { HTTPModuleImpl } from '../http/impl';
+import { RawRequestParam, RawRequest } from '../raw/raw';
+import { RawRequestImpl, setupSetting as setupRawRequestSetting } from '../raw/impl';
 
 export type ClientSetting = {
   apikey: string;
@@ -35,5 +37,12 @@ export class ClientImpl implements Client {
 
   constructor(private setting: ClientSetting) {
     this.http = new HTTPModuleImpl(setting);
+  }
+
+  raw(param: RawRequestParam): RawRequest {
+    return new RawRequestImpl(this.setting, setupRawRequestSetting(param));
+  }
+  replay() {
+    return new RequestImpl(this.setting, setupRawRequestSetting(param));
   }
 }

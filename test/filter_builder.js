@@ -7,7 +7,7 @@ describe('FilterBuilder', function() {
 
   it('throws if no filter was provided', function() {
     assert.throws(function () {
-      client.filter().asRaw();
+      client.http.filter().asRaw();
     });
   });
   it('throws if channels are not provided', function() {
@@ -15,7 +15,7 @@ describe('FilterBuilder', function() {
   });
   it('throws if start was not provided', function() {
     assert.throws(function () {
-      client.filter()
+      client.http.filter()
         .bitmex(
           exds.filterBitmex()
             .orderBookL2()
@@ -26,7 +26,7 @@ describe('FilterBuilder', function() {
   });
   it('throws if end was not provided', function() {
     assert.throws(function () {
-      client.filter()
+      client.http.filter()
         .bitmex(
           exds.filterBitmex()
             .orderBookL2()
@@ -37,9 +37,9 @@ describe('FilterBuilder', function() {
     });
   });
   it('using range', function() {
-    client.filter()
+    client.http.filter()
       .bitmex(
-        exds.filterBitmex()
+        exds.http.filterBitmex()
           .orderBookL2()
           .build()
       )
@@ -48,7 +48,7 @@ describe('FilterBuilder', function() {
   });
   it('throw if start and end are the same', function() {
     assert.throws(function () {
-      client.filter()
+      client.http.filter()
         .bitmex(
           exds.filterBitmex()
             .orderBookL2()
@@ -60,7 +60,7 @@ describe('FilterBuilder', function() {
   });
   it('throw if start and end are the backwards', function() {
     assert.throws(function () {
-      client.filter()
+      client.http.filter()
         .bitmex(
           exds.filterBitmex()
             .orderBookL2()
@@ -71,7 +71,7 @@ describe('FilterBuilder', function() {
     });
   });
   it('builds filter request as raw', function() {
-    client.filter()
+    client.http.filter()
       .bitmex(
         exds.filterBitmex()
           .orderBookL2()
@@ -82,7 +82,7 @@ describe('FilterBuilder', function() {
       .asRaw();
   });
   it('builds filter request as scv like', function() {
-    client.filter()
+    client.http.filter()
       .bitmex(
         exds.filterBitmex()
           .orderBookL2()

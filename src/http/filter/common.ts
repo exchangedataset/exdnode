@@ -7,8 +7,8 @@ import readline from 'readline';
 
 import { readString, httpsGet } from '../../utils/stream';
 import { convertNanosecToMinute } from '../../utils/datetime';
-import { LineType, FilterLine } from './filter';
 import { ClientSetting } from '../../client/impl';
+import { LineType, Line } from '../../common/line';
 
 function convertLineType(type: string): LineType {
   switch (type) {
@@ -27,12 +27,12 @@ function convertLineType(type: string): LineType {
   }
 }
 
-async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promise<FilterLine[]> {
+async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promise<Line[]> {
   return new Promise((resolve, reject) => {
     const lineStream = readline.createInterface({
       input: stream,
     });
-    const lineArr: FilterLine[] = [];
+    const lineArr: Line[] = [];
     lineStream.on('line', (line: string) => {
       const prefix = line.slice(0, 2);
       let split;
@@ -109,7 +109,7 @@ export async function downloadShard(
   start: bigint,
   end: bigint,
   minute: number,
-): Promise<FilterLine[]> {
+): Promise<Line[]> {
   // request and download
   const res = await httpsGet(
     clientSetting,
@@ -138,7 +138,7 @@ export async function downloadShard(
   }
 
   // process stream to get lines
-  let lines: FilterLine[] = [];
+  let lines: Line[] = [];
   if (statusCode === 200) {
     /* read lines from the response stream */
     lines = await readLines(exchange, res);

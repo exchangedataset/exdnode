@@ -4,10 +4,10 @@ const { APIKEY } = require('./constants');
 
 describe('FilterRequest', function() {
   const client = createClient({ apikey: APIKEY });
-  const easyReq = client.filter().bitmex(['orderBookL2']).range(26375331).asRaw();
+  const easyReq = client.http.filter().bitmex(['orderBookL2']).range(26375331).asRaw();
   const hardStart = (26375331n * 60n + 20n) * 1000000000n;
   const hardEnd = (26375332n * 60n - 25n) * 1000000000n;
-  const hardReq = client.filter()
+  const hardReq = client.http.filter()
     .bitmex(['orderBookL2'])
     // cut 20 seconds after the beginning of shard
     .start(hardStart)

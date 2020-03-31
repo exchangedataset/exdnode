@@ -4,17 +4,17 @@
  */
 
 import { ClientSetting } from "../../client/impl";
-import { FilterLine } from "./filter";
 import { convertNanosecToMinute } from "../../utils/datetime";
 import { downloadShard } from "./common";
 import { Shard, FilterSetting } from "./impl";
+import { Line } from "../../common/line";
 
-class ShardsLineIterator implements Iterator<FilterLine> {
+class ShardsLineIterator implements Iterator<Line> {
   private position = 0;
 
   constructor(private shards: Shard[]) {}
 
-  public next(): IteratorResult<FilterLine> {
+  public next(): IteratorResult<Line> {
     // find the line to return
     while (this.shards.length > 0 && this.shards[0].length <= this.position) {
       // this shard is all read
@@ -77,14 +77,14 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: FilterSe
   return map;
 }
 
-export default async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<FilterLine[]> {
+export default async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<Line[]> {
   // download all shards, returns an array of shards for each exchange
   const map = await downloadAllShards(clientSetting, setting);
   // stores iterator and last line for each exchange
   const states: {
     [key: string]: {
-      iterator: Iterator<FilterLine>;
-      lastLine: FilterLine;
+      iterator: Iterator<Line>;
+      lastLine: Line;
     };
   } = {};
   const exchanges: string[] = [];
@@ -100,7 +100,7 @@ export default async function filterDownload(clientSetting: ClientSetting, setti
 
   /* it needs to process lines so that it becomes a single array */
   // array to store the result
-  const array: FilterLine[] = []
+  const array: Line[] = []
   while (exchanges.length > 0) {
     // have to set initial value to calculate minimun value
     let argmin: number = exchanges.length-1;

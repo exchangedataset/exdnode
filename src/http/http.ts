@@ -1,18 +1,18 @@
-import { SnapshotRequestBuilder } from './snapshot/builder/builder';
-import { FilterRequestBuilder } from './filter/filter';
+import { FilterParam, FilterRequest } from './filter/filter';
+import { SnapshotParam, SnapshotRequest } from './snapshot/snapshot';
 
 /**
  * Low-level HTTP-API module.
  */
 export interface HTTPModule {
   /**
-   * Create and return builder to call filter method of HTTP-API.
+   * Create and return request to filter method HTTP-API endpoint.
    */
-  filter(): FilterRequestBuilder;
+  filter(param: FilterParam): FilterRequest;
   /**
-   * Create and return builder to call snapshot method of HTTP-API.
+   * Create and return request to snapshot method HTTP-API endpoint.
    */
-  snapshot(): SnapshotRequestBuilder;
+  snapshot(param: SnapshotParam): SnapshotRequest;
 }
 
 export * as filter from './filter/filter';

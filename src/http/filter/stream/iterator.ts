@@ -3,23 +3,23 @@
  * @packageDocumentation
  */
 
-import { FilterLine } from "../filter";
+import { Line } from "../../../common/line";
 import { ClientSetting } from "../../../client/impl";
 import StreamExchangeIterator from "./exchange_iterator";
 import { FilterSetting } from "../impl";
 
-export default class StreamIterator implements AsyncIterator<FilterLine> {
+export default class StreamIterator implements AsyncIterator<Line> {
   private states: {
     [key: string]: {
       iterator: StreamExchangeIterator;
-      lastLine: FilterLine;
+      lastLine: Line;
     };
   } | null = null;
   private exchanges: string[] = [];
 
   constructor(private clientSetting: ClientSetting, private setting: FilterSetting, private bufferSize?: number) {}
 
-  async next(): Promise<IteratorResult<FilterLine>> {
+  async next(): Promise<IteratorResult<Line>> {
     if (this.states === null) {
       // this is the first time to be called, initialize exchange iterator
       // and read fist line and do the normal process

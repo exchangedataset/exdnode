@@ -19,7 +19,7 @@ describe('Client', function() {
     it('creates filter builder', function() {
       let builder;
       assert.doesNotThrow(function () {
-        builder = exds.createClient({ apikey: APIKEY }).filter();
+        builder = exds.createClient({ apikey: APIKEY }).http.filter();
       });
       assert.ok('configure' in builder, 'unexpected object');
     });
