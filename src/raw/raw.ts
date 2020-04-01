@@ -2,8 +2,8 @@ import { Line } from "../common/line";
 import { Filter } from "../common/param";
 import { AnyDateInstance } from "../utils/datetime";
 import { ClientParam } from "../client/client";
-import { setupSetting as setupClientSetting} from "../client/impl";
-import { RawRequestImpl, setupSetting as setupRawRequestSetting } from "./impl";
+import { setupClientSetting} from "../client/impl";
+import { RawRequestImpl, setupRawRequestSetting as setupRawRequestSetting } from "./impl";
 
 /**
  * Parameters to make new {@link RawRequest}.
@@ -40,7 +40,7 @@ export interface RawRequest {
   /**
    * Stream response line by line.
    */
-  stream(): AsyncIterable<Line>;
+  stream(bufferSize?: number): AsyncIterable<Line>;
 }
 
 export function raw(clientParam: ClientParam, param: RawRequestParam): RawRequest {

@@ -3,6 +3,9 @@
  */
 export type Filter = { [key: string]: string[] };
 
+/**
+ * @internal
+ */
 export function checkParamFilter(objContainingFilter: { [key: string]: any }): void {
   if (!('filter' in objContainingFilter)) throw new Error('"filter" is undefined, there must be at least one channel to filter.');
   if (Object.keys(objContainingFilter.filter).length === 0) throw new Error('"filter" must contain at least one channel to filter, found no exchange.');

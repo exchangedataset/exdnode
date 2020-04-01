@@ -1,6 +1,7 @@
-import { ClientImpl, setupSetting } from './impl';
+import { ClientImpl, setupClientSetting } from './impl';
 import { HTTPModule } from '../http/http';
 import { RawRequest, RawRequestParam } from '../raw/raw';
+import { ReplayRequestBuilder } from '../replay/replay';
 
 /**
  * Config for making new client.
@@ -30,7 +31,7 @@ export interface Client {
    */
   raw(param: RawRequestParam): RawRequest;
   /**
-   * Module to replay market data.
+   * Returns builder to create {@link ReplayRequest} that replays market data.
    */
   replay(): ReplayRequestBuilder;
 }
@@ -42,6 +43,6 @@ export interface Client {
  * @see ClientParam
  */
 export function createClient(config: ClientParam): Client {
-  const setting = setupSetting(config);
+  const setting = setupClientSetting(config);
   return new ClientImpl(setting);
 }

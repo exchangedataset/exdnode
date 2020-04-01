@@ -3,32 +3,38 @@
  * @packageDocumentation
  */
 
-import { ReplayRequestParamBuilder } from "./builder";
-import { ReplayRequestParam } from "../replay";
+import { ReplayRequestBuilder } from "./builder";
+import { ReplayRequest } from "../replay";
 import { AnyDateInstance } from "../../utils/datetime";
+import { ClientSetting } from "../../client/impl";
+import { setupRawRequestSetting } from "../../raw/impl";
+import { RawRequestParam } from "../../raw/raw";
+import { ReplayRequestImpl } from "../impl";
 
-export class FilterRequestBuilderImpl implements ReplayRequestParamBuilder {
+export class ReplayRequestBuilderImpl implements ReplayRequestBuilder {
   private config: { [key: string]: any } = {
     filter: {},
   };
 
-  build(): ReplayRequestParam {
-    return this.config as ReplayRequestParam;
+  constructor(private clientSetting: ClientSetting) {}
+
+  build(): ReplayRequest {
+    return new ReplayRequestImpl(this.clientSetting, setupRawRequestSetting(this.config as RawRequestParam));
   }
 
-  bitmex(channels: string[]): ReplayRequestParamBuilder {
+  bitmex(channels: string[]): ReplayRequestBuilder {
     return this.exchange('bitmex', channels);
   }
 
-  bitflyer(channels: string[]): ReplayRequestParamBuilder {
+  bitflyer(channels: string[]): ReplayRequestBuilder {
     return this.exchange('bitflyer', channels);
   }
 
-  bitfinex(channels: string[]): ReplayRequestParamBuilder {
+  bitfinex(channels: string[]): ReplayRequestBuilder {
     return this.exchange('bitfinex', channels);
   }
 
-  exchange(exchangeName: string, channels: string[]): ReplayRequestParamBuilder {
+  exchange(exchangeName: string, channels: string[]): ReplayRequestBuilder {
     if (!(exchangeName in this.config)) {
       this.config.filter[exchangeName] = channels;
       return this;
@@ -36,23 +42,23 @@ export class FilterRequestBuilderImpl implements ReplayRequestParamBuilder {
     this.config.filter[exchangeName].push(...channels);
     return this;
   }
-  start(date: AnyDateInstance): ReplayRequestParamBuilder {
+  start(date: AnyDateInstance): ReplayRequestBuilder {
     this.config.start = date;
     return this;
   }
-  end(date: AnyDateInstance): ReplayRequestParamBuilder {
+  end(date: AnyDateInstance): ReplayRequestBuilder {
     this.config.end = date;
     return this;
   }
-  range(start: AnyDateInstance, end?: AnyDateInstance): ReplayRequestParamBuilder {
+  range(start: AnyDateInstance, end?: AnyDateInstance): ReplayRequestBuilder {
     return this.start(start).end(typeof end === 'undefined' ? start : end);
   }
 
-  asRaw(): ReplayRequestParam {
+  asRaw(): ReplayRequest {
     this.config.format = 'none';
     return this.build();
   }
-  asCSVLike(): ReplayRequestParam {
+  asCSVLike(): ReplayRequest {
     this.config.format = 'csvlike';
     return this.build();
   }

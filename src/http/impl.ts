@@ -1,9 +1,14 @@
+/**
+ * @internal
+ * @packageDocumentation
+ */
+
 import { HTTPModule } from "./http";
 import { ClientSetting } from "../client/impl";
 import { FilterParam, FilterRequest } from "./filter/filter";
 import { SnapshotParam, SnapshotRequest } from "./snapshot/snapshot";
-import { FilterRequestImpl, setupSetting as setupFilterRequestSetting } from "./filter/impl";
-import { SnapshotRequestImpl, setupSetting as setupSnapshotRequestSetting } from "./snapshot/impl";
+import { FilterRequestImpl, setupFilterRequestSetting } from "./filter/impl";
+import { SnapshotRequestImpl, setupSnapshotRequestSetting } from "./snapshot/impl";
 
 export class HTTPModuleImpl implements HTTPModule {
   constructor(private setting: ClientSetting) {}

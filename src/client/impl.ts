@@ -9,14 +9,16 @@ import { ClientParam, Client } from './client';
 import { HTTPModule } from '../http/http';
 import { HTTPModuleImpl } from '../http/impl';
 import { RawRequestParam, RawRequest } from '../raw/raw';
-import { RawRequestImpl, setupSetting as setupRawRequestSetting } from '../raw/impl';
+import { RawRequestImpl, setupRawRequestSetting } from '../raw/impl';
+import { ReplayRequestBuilder } from '../replay/builder/builder';
+import { ReplayRequestBuilderImpl } from '../replay/builder/impl';
 
 export type ClientSetting = {
   apikey: string;
   timeout: number;
 }
 
-export function setupSetting(reference: ClientParam): ClientSetting {
+export function setupClientSetting(reference: ClientParam): ClientSetting {
   // take a shallow copy of reference setting as this will be modified
   if (!validateBase64(reference.apikey)) throw new TypeError('Setting "apikey" must be an valid url-safe base64 value');
   let timeout: number;
@@ -42,7 +44,7 @@ export class ClientImpl implements Client {
   raw(param: RawRequestParam): RawRequest {
     return new RawRequestImpl(this.setting, setupRawRequestSetting(param));
   }
-  replay() {
-    return new RequestImpl(this.setting, setupRawRequestSetting(param));
+  replay(): ReplayRequestBuilder {
+    return new ReplayRequestBuilderImpl(this.setting);
   }
 }

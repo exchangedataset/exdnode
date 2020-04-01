@@ -4,15 +4,16 @@
  */
 
 import { ClientSetting } from "../../../client/impl";
-import { downloadShard } from "../common";
-import { Shard } from "../impl";
 import { FILTER_DEFAULT_BUFFER_SIZE } from "../../../constants";
 import { convertNanosecToMinute } from "../../../utils/datetime";
+import { FilterSetting } from "../impl";
+import { Shard } from "../../../common/line";
+import { downloadFilterShard } from "../common";
 
 type ShardSlot = { shard?: Shard };
 type Notifier = (err?: Error) => void;
 
-export default class StreamShardIterator implements AsyncIterator<Shard> {
+export default class FilterStreamShardIterator implements AsyncIterator<Shard> {
   // fill buffer with null value (means not downloaded)
   private buffer: ShardSlot[] = [];
   private notifier: Notifier | null = null;
@@ -22,14 +23,11 @@ export default class StreamShardIterator implements AsyncIterator<Shard> {
 
   constructor(
     private clientSetting: ClientSetting,
-    private exchange: string,
-    private channels: string[],
-    private start: bigint,
-    private end: bigint,
+    private setting: FilterSetting,
     bufferSize: number = FILTER_DEFAULT_BUFFER_SIZE,
   ) {
-    this.nextDownloadMinute = convertNanosecToMinute(start);
-    this.endMinute = convertNanosecToMinute(end);
+    this.nextDownloadMinute = convertNanosecToMinute(setting.start);
+    this.endMinute = convertNanosecToMinute(setting.end);
     // start downloading shards to fill buffer
     for (let i = 0; i < bufferSize && this.nextDownloadMinute <= this.endMinute; i += 1) this.downloadNewShard();
   }
@@ -38,7 +36,14 @@ export default class StreamShardIterator implements AsyncIterator<Shard> {
     // push empty slot to represent shard downloading
     const slot: ShardSlot = {};
     this.buffer.push(slot);
-    downloadShard(this.clientSetting, this.exchange, this.channels, this.start, this.end, this.nextDownloadMinute).then((shard) => {
+    downloadFilterShard(
+      this.clientSetting,
+      this.setting.exchange,
+      this.setting.channels,
+      this.setting.start,
+      this.setting.end,
+      this.nextDownloadMinute,
+    ).then((shard) => {
       // once downloaded, set instance of shard
       slot.shard = shard;
       if (this.notifier !== null) {

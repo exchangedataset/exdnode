@@ -1,18 +1,20 @@
 import { AnyDateInstance } from "../../utils/datetime";
 import { ClientParam } from "../../client/client";
-import { setupSetting as setupClientSetting } from "../../client/impl";
-import { setupSetting as setupSnapshotSetting, SnapshotRequestImpl } from "./impl";
-import { SnapshotResponse } from "./response";
-import { Filter } from "../../common/param";
+import { setupClientSetting } from "../../client/impl";
+import { setupSnapshotRequestSetting, SnapshotRequestImpl } from "./impl";
 
 /**
  * Parameters to make new {@link SnapshotRequest}.
  */
 export type SnapshotParam = {
   /**
-   * What exchanges and channels to filter-in.
+   * What exchange to filter-in.
    */
-  filter: Filter;
+  exchange: string;
+  /**
+   * What channels to filter-in.
+   */
+  channels: string[];
   /**
    * Date-time to take snapshot at.
    */
@@ -24,15 +26,33 @@ export type SnapshotParam = {
 }
 
 /**
+ * Snapshot of channel.
+ */
+export type Snapshot = {
+  /**
+   * Channel name.
+   */
+  channel: string;
+  /**
+   * Timestamp of this snapshot.
+   */
+  timestamp: bigint;
+  /**
+   * Snapshot.
+   */
+  snapshot: string;
+}
+
+/**
  * Request to snapshot HTTP-API endpoint.
  */
 export interface SnapshotRequest {
   /**
    * Send request to server.
    */
-  download(): Promise<SnapshotResponse>;
+  download(): Promise<Snapshot[]>;
 }
 
 export function snapshot(clientParam: ClientParam, param: SnapshotParam): SnapshotRequest {
-  return new SnapshotRequestImpl(setupClientSetting(clientParam), setupSnapshotSetting(param));
+  return new SnapshotRequestImpl(setupClientSetting(clientParam), setupSnapshotRequestSetting(param));
 }

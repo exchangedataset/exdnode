@@ -1,18 +1,21 @@
 import { ClientParam } from '../../client/client';
-import { setupSetting as setupClientSetting } from '../../client/impl';
+import { setupClientSetting } from '../../client/impl';
 import { AnyDateInstance } from '../../utils/datetime';
-import { setupSetting as setupFilterSetting, FilterRequestImpl } from './impl';
-import { Filter } from '../../common/param';
-import { Line } from '../../common/line';
+import { setupFilterRequestSetting, FilterRequestImpl } from './impl';
+import { Line, Shard } from '../../common/line';
 
 /**
  * Parameters to make new {@link FilterRequest}.
  */
 export type FilterParam = {
   /**
-   * What exchanges and channels to filter-in.
+   * What exchange to filter-in.
    */
-  filter: Filter;
+  exchange: string;
+  /**
+   * What channels to filter-in.
+   */
+  channels: string[];
   /**
    * Start date-time.
    */
@@ -37,10 +40,10 @@ export type FilterParam = {
  */
 export interface FilterRequest {
   /**
-   * Send request to server and store all it one array.
-   * @returns Promise of response in one array
+   * Send request to server and return an array of {@link Shard}.
+   * @returns Promise of response splitted in multiple {@link Shard}s
    */
-  download(): Promise<Line[]>;
+  download(): Promise<Shard[]>;
 
   /**
    * Send request to server and read response by streaming.
@@ -52,7 +55,7 @@ export interface FilterRequest {
    * **Please note that buffering won't start by calling this method,**
    * **calling {@link AsyncIterable.[Symbol.asyncIterator]} will.**
    *
-   * Higher responsiveness than {@link downloadAsArray} is expected as it does not have to wait for
+   * Higher responsiveness than {@link download} is expected as it does not have to wait for
    * the entire data to be downloaded.
    *
    * @param bufferSize Desired buffer size to store streaming data.
@@ -68,5 +71,5 @@ export interface FilterRequest {
  * @param params Filter parameter
  */
 export function filter(clientParams: ClientParam, params: FilterParam): FilterRequest {
-  return new FilterRequestImpl(setupClientSetting(clientParams), setupFilterSetting(params));
+  return new FilterRequestImpl(setupClientSetting(clientParams), setupFilterRequestSetting(params));
 }

@@ -3,29 +3,32 @@
  * @packageDocumentation
  */
 
-import { Line } from "../../common/line";
-import { Filter, checkParamFilter } from "../../common/param";
+import { Line, Shard } from "../../common/line";
 import { FilterParam, FilterRequest } from "./filter";
-import { convertDatetimeParam } from "../../utils/datetime";
+import { convertDatetimeParam, convertNanosecToMinute } from "../../utils/datetime";
 import { ClientSetting } from "../../client/impl";
-import filterDownload from "./download";
-import StreamIterator from "./stream/iterator";
+import FilterStreamIterator from "./stream/iterator";
+import { downloadFilterShard } from "./common";
 
-export type Shard = Line[];
 export type FilterSetting = {
-  filter: Filter;
+  exchange: string;
+  channels: string[];
   start: bigint;
   end: bigint;
   format: string;
 }
 
-export function setupSetting(param: FilterParam): FilterSetting {
-  if (!('start' in param)) throw new Error('"start" date time was not specified.');
-  if (!('end' in param)) throw new Error('"end" date time was not specified.');
+export function setupFilterRequestSetting(param: FilterParam): FilterSetting {
+  if (!('start' in param)) throw new Error('"start" date time was not specified');
+  if (!('end' in param)) throw new Error('"end" date time was not specified');
   // type check for those parameter will be done in convertDatetimeParam function
 
-  checkParamFilter(param);
-  if (!('format' in param)) throw new Error('"format" was not specified.');
+  if (!('exchange' in param)) throw new Error('"exchange" was not specified');
+  if (!('channels' in param)) throw new Error('"channels" was not specified');
+  for (const ch of param.channels) {
+    if (typeof ch !== 'string') throw new Error('element of "channels" must be of string type');
+  }
+  if (!('format' in param)) throw new Error('"format" was not specified');
   if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
 
   const start = convertDatetimeParam(param.start);
@@ -40,12 +43,13 @@ export function setupSetting(param: FilterParam): FilterSetting {
     throw new Error('Invalid date time range "end" <= "start"');
   }
 
-  // deep copy filter parameter
-  const filter = JSON.parse(JSON.stringify(param.filter));
+  // deep copy channels parameter
+  const channels = JSON.parse(JSON.stringify(param.channels));
 
   // must return new object so it won't be modified externally
   return {
-    filter,
+    exchange: param.exchange,
+    channels,
     start,
     end,
     format: param.format,
@@ -55,8 +59,25 @@ export function setupSetting(param: FilterParam): FilterSetting {
 export class FilterRequestImpl implements FilterRequest {
   constructor(private clientSetting: ClientSetting, private setting: FilterSetting) {}
 
-  async download(): Promise<Line[]> {
-    return filterDownload(this.clientSetting, this.setting);
+  async download(): Promise<Shard[]> {
+    const proms: Promise<Shard>[] = [];
+
+    const startMinute = convertNanosecToMinute(this.setting.start);
+    const endMinute = convertNanosecToMinute(this.setting.end);
+
+    for (let minute = startMinute; minute <= endMinute; minute++) {
+      proms.push(
+        downloadFilterShard(this.clientSetting,
+          this.setting.exchange,
+          this.setting.channels,
+          this.setting.start,
+          this.setting.end,
+          minute,
+        )
+      );
+    }
+
+    return Promise.all(proms);
   }
 
   stream(bufferSize?: number): AsyncIterable<Line> {
@@ -64,7 +85,7 @@ export class FilterRequestImpl implements FilterRequest {
     const setting = this.setting;
     return {
       [Symbol.asyncIterator](): AsyncIterator<Line> {
-        return new StreamIterator(clientSetting, setting, bufferSize);
+        return new FilterStreamIterator(clientSetting, setting, bufferSize);
       },
     };
   }

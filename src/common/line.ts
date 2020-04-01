@@ -99,3 +99,9 @@ export type Line = {
   message?: string;
 }
 
+/**
+ * Shard is continuous flattened collection of datasets.
+ * 
+ * Shard contains one minute worth of lines at most.
+ */
+export type Shard = Line[];

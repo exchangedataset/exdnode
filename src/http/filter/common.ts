@@ -4,11 +4,10 @@
  */
 
 import readline from 'readline';
-
-import { readString, httpsGet } from '../../utils/stream';
-import { convertNanosecToMinute } from '../../utils/datetime';
 import { ClientSetting } from '../../client/impl';
-import { LineType, Line } from '../../common/line';
+import { Shard, Line, LineType } from '../../common/line';
+import { convertNanosecToMinute } from '../../utils/datetime';
+import { getResponse } from '../../common/download';
 
 function convertLineType(type: string): LineType {
   switch (type) {
@@ -102,44 +101,24 @@ async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promi
  * @param end Same as above, but excluded (timestamp < end)
  * @param minute
  */
-export async function downloadShard(
+export async function downloadFilterShard(
   clientSetting: ClientSetting,
   exchange: string,
   channels: string[],
   start: bigint,
   end: bigint,
   minute: number,
-): Promise<Line[]> {
+): Promise<Shard> {
   // request and download
-  const res = await httpsGet(
+  const res = await getResponse(
     clientSetting,
     `filter/${exchange}/${minute}`,
     { channels },
   );
 
-  /* check status code and content-type header */
-  const { statusCode, headers } = res;
-  // 200 = ok, 404 = database not found
-  if (statusCode !== 200 && statusCode !== 404) {
-    const msg = await readString(res);
-    let error: Error | string;
-    try {
-      const obj = JSON.parse(msg);
-      error = obj.error || obj.message || obj.Message;
-    } catch (e) {
-      error = msg;
-    }
-    throw new Error(`Request failed: ${statusCode} ${error}\nPlease check the internet connection and the remaining quota of your API key`);
-  }
-  // check content type
-  const contentType = headers['content-type'];
-  if (contentType !== 'text/plain') {
-    throw new Error(`Invalid response content-type, expected: 'text/plain' got: '${contentType}'`);
-  }
-
   // process stream to get lines
   let lines: Line[] = [];
-  if (statusCode === 200) {
+  if (res.statusCode === 200) {
     /* read lines from the response stream */
     lines = await readLines(exchange, res);
   }
