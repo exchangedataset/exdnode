@@ -3,17 +3,18 @@
  * @packageDocumentation
  */
 
-import { ClientSetting } from "../../../client/impl";
-import { FILTER_DEFAULT_BUFFER_SIZE } from "../../../constants";
-import { convertNanosecToMinute } from "../../../utils/datetime";
-import { FilterSetting } from "../impl";
-import { Shard } from "../../../common/line";
-import { downloadFilterShard } from "../common";
+import { ClientSetting } from "../../client/impl";
+import { FILTER_DEFAULT_BUFFER_SIZE } from "../../constants";
+import { convertNanosecToMinute } from "../../utils/datetime";
+import { Shard } from "../../common/line";
+import { filterDownload, setupFilterRequestSetting } from "../../http/filter/impl";
+import { snapshotDownload, setupSnapshotRequestSetting } from "../../http/snapshot/impl";
+import { convertSnapshotToLine } from "../common";
 
 type ShardSlot = { shard?: Shard };
 type Notifier = (err?: Error) => void;
 
-export default class FilterStreamShardIterator implements AsyncIterator<Shard> {
+export default class ExchangeStreamShardIterator implements AsyncIterator<Shard> {
   // fill buffer with null value (means not downloaded)
   private buffer: ShardSlot[] = [];
   private notifier: Notifier | null = null;
@@ -23,27 +24,52 @@ export default class FilterStreamShardIterator implements AsyncIterator<Shard> {
 
   constructor(
     private clientSetting: ClientSetting,
-    private setting: FilterSetting,
+    private exchange: string,
+    private channels: string[],
+    private start: bigint,
+    private end: bigint,
+    private format: string,
     bufferSize: number = FILTER_DEFAULT_BUFFER_SIZE,
   ) {
-    this.nextDownloadMinute = convertNanosecToMinute(setting.start);
-    this.endMinute = convertNanosecToMinute(setting.end);
+    this.nextDownloadMinute = convertNanosecToMinute(start);
+    this.endMinute = convertNanosecToMinute(end);
     // start downloading shards to fill buffer
     for (let i = 0; i < bufferSize && this.nextDownloadMinute <= this.endMinute; i += 1) this.downloadNewShard();
   }
 
   private downloadNewShard(): void {
+    const isFirstShard = this.buffer.length == 0
     // push empty slot to represent shard downloading
     const slot: ShardSlot = {};
     this.buffer.push(slot);
-    downloadFilterShard(
-      this.clientSetting,
-      this.setting.exchange,
-      this.setting.channels,
-      this.setting.start,
-      this.setting.end,
-      this.nextDownloadMinute,
-    ).then((shard) => {
+    let download: Promise<Shard>;
+    if (isFirstShard) {
+      // if this shard is the first shard to be downloaded, then
+      // it must download snapshot first
+      download = snapshotDownload(
+        this.clientSetting,
+        setupSnapshotRequestSetting({
+          exchange: this.exchange,
+          channels: this.channels,
+          at: this.start,
+          format: this.format,
+        })
+      ).then((sss) => sss.map((ss) => convertSnapshotToLine(this.exchange, ss)))
+    } else {
+      download = filterDownload(
+        this.clientSetting,
+        setupFilterRequestSetting({
+          exchange: this.exchange,
+          channels: this.channels,
+          start: this.start,
+          end: this.end,
+          minute: this.nextDownloadMinute,
+          format: this.format,
+        })
+      );
+      this.nextDownloadMinute += 1;
+    }
+    download.then((shard) => {
       // once downloaded, set instance of shard
       slot.shard = shard;
       if (this.notifier !== null) {
@@ -58,7 +84,6 @@ export default class FilterStreamShardIterator implements AsyncIterator<Shard> {
         this.notifier(err);
       }
     });
-    this.nextDownloadMinute += 1;
   };
 
   public async next(): Promise<IteratorResult<Shard>> {

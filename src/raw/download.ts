@@ -6,9 +6,10 @@
 import { Line, Shard } from "../common/line";
 import { ClientSetting } from "../client/impl";
 import { RawRequestSetting } from "./impl";
-import { FilterRequestImpl, setupFilterRequestSetting as setupFilterRequestSetting} from "../http/filter/impl";
-import { SnapshotRequestImpl, setupSnapshotRequestSetting } from "../http/snapshot/impl";
+import { setupFilterRequestSetting as setupFilterRequestSetting, filterDownload} from "../http/filter/impl";
+import { setupSnapshotRequestSetting, snapshotDownload } from "../http/snapshot/impl";
 import { convertSnapshotToLine } from "./common";
+import { convertNanosecToMinute } from "../utils/datetime";
 
 class ShardsLineIterator implements Iterator<Line> {
   private position = 0;
@@ -46,35 +47,41 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
   // initialize an array to store all shards
   const map: ExchangeShards = Object.fromEntries(entries.map(([exchange]) => [exchange, []]));
 
-  const snapshotProms: Promise<Shard>[] = [];
-  const filterProms: Promise<Shard[]>[] = [];
+  const startMinute = convertNanosecToMinute(setting.start);
+  const endMinute = convertNanosecToMinute(setting.end);
+  const proms: Promise<Shard[]>[] = [];
   for (const [exchange, channels] of entries) {
-    const ss = new SnapshotRequestImpl(clientSetting, setupSnapshotRequestSetting({
-      exchange,
-      channels,
-      at: setting.start,
-      format: setting.format,
-    }));
-    snapshotProms.push(ss.download().then((sss) => sss.map((ss) => convertSnapshotToLine(exchange, ss))));
-    const freq = new FilterRequestImpl(clientSetting, setupFilterRequestSetting({
-      exchange,
-      channels,
-      start: setting.start,
-      end: setting.end,
-      format: setting.format,
-    }));
-    filterProms.push(freq.download());
+    const exchangeProms: Promise<Shard>[] = [];
+    exchangeProms.push(
+      snapshotDownload(clientSetting, setupSnapshotRequestSetting({
+        exchange,
+        channels,
+        at: setting.start,
+        format: setting.format,
+      })).then((sss) => sss.map((ss) => convertSnapshotToLine(exchange, ss)))
+    );
+    for (let minute = startMinute; minute <= endMinute; minute++) {
+      exchangeProms.push(
+        filterDownload(clientSetting, setupFilterRequestSetting({
+          exchange,
+          channels,
+          start: setting.start,
+          end: setting.end,
+          minute,
+          format: setting.format,
+        }))
+      );
+    }
+    proms.push(Promise.all(exchangeProms))
   }
 
   // wait download and processing of all shards
-  const result = await Promise.all([Promise.all(snapshotProms), Promise.all(filterProms)]);
+  const result = await Promise.all(proms);
 
   // set shards to map from array index
-  const snapshotResult = result[0];
-  const filterResult = result[1];
   for (let i = 0; i < entries.length; i++) {
     const [exchange] = entries[i];
-    map[exchange] = [snapshotResult[i], ...filterResult[i]];
+    map[exchange] = result[i];
   }
 
   return map;

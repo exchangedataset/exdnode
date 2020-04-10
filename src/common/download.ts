@@ -3,16 +3,21 @@
  * @packageDocumentation
  */
 
+import stream from "stream"
+
 import { httpsGet, readString } from "../utils/stream";
 import { ClientSetting } from "../client/impl";
 import { ParsedUrlQueryInput } from "querystring";
-import { IncomingMessage } from "http";
+import { createGunzip } from "zlib";
 
 export async function getResponse(
   clientSetting: ClientSetting,
   resource: string,
   query: ParsedUrlQueryInput,
-): Promise<IncomingMessage> {
+): Promise<{
+  statusCode: number;
+  stream: stream.Readable;
+}> {
   // request and download
   const res = await httpsGet(
     clientSetting,
@@ -22,6 +27,9 @@ export async function getResponse(
 
   /* check status code and content-type header */
   const { statusCode, headers } = res;
+  if (typeof statusCode === 'undefined') {
+    throw new Error("status code is undefined")
+  }
   // 200 = ok, 404 = database not found
   if (statusCode !== 200 && statusCode !== 404) {
     const msg = await readString(res);
@@ -34,11 +42,23 @@ export async function getResponse(
     }
     throw new Error(`Request failed: ${statusCode} ${error}\nPlease check the internet connection and the remaining quota of your API key`);
   }
+  // check for compression
+  if ('content-encoding' in headers) {
+    // looks like response is compressed
+    const contentEncoding = headers['content-encoding'];
+
+    // only gzip is supported
+    if (contentEncoding !== 'gzip') {
+      throw new Error(`found '${contentEncoding}' in Content-Encoding header, but it is not supported`)
+    }
+    const gunzip = createGunzip()
+    return {statusCode, stream: res.pipe(gunzip)}
+  }
   // check content type
   const contentType = headers['content-type'];
   if (contentType !== 'text/plain') {
     throw new Error(`Invalid response content-type, expected: 'text/plain' got: '${contentType}'`);
   }
 
-  return res;
+  return {statusCode, stream: res};
 }

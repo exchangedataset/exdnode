@@ -31,6 +31,11 @@ export type RawRequestParam = {
 
 /**
  * Replays market data in raw format.
+ *
+ * You can pick the way to read the response:
+ * - {@link download} to immidiately start downloading the whole
+ * response as one array.
+ * - {@link stream} to return iterable object yields line by line.
  */
 export interface RawRequest {
   /**
@@ -38,7 +43,21 @@ export interface RawRequest {
    */
   download(): Promise<Line[]>;
   /**
-   * Stream response line by line.
+   * Send request to server and read response by streaming.
+   *
+   * Returns Iterable object yields response line by line.
+   * Can be iterated using for-async-of sentence.
+   * Iterator yields immidiately if a line is bufferred, waits for download if not avaliable.
+   *
+   * **Please note that buffering won't start by calling this method,**
+   * **calling {@link AsyncIterable.[Symbol.asyncIterator]} will.**
+   *
+   * Higher responsiveness than {@link download} is expected as it does not have to wait for
+   * the entire data to be downloaded.
+   *
+   * @param bufferSize Desired buffer size to store streaming data.
+   * One shard is equavalent to one minute. Optional.
+   * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
    */
   stream(bufferSize?: number): AsyncIterable<Line>;
 }

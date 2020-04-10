@@ -3,10 +3,10 @@
  * @packageDocumentation
  */
 
-import { Line } from "../common/line";
-import { RawRequestSetting } from "./impl";
-import { ClientSetting } from "../client/impl";
-import { FilterRequestImpl, setupFilterRequestSetting} from "../http/filter/impl";
+import { Line } from "../../common/line";
+import { RawRequestSetting } from "../impl";
+import { ClientSetting } from "../../client/impl";
+import ExchangeStreamIterator from "./exchange_iterator";
 
 export default class RawStreamIterator implements AsyncIterator<Line> {
   private states: {
@@ -21,18 +21,19 @@ export default class RawStreamIterator implements AsyncIterator<Line> {
 
   async next(): Promise<IteratorResult<Line>> {
     if (this.states === null) {
-      // this is the first time to be called, initialize filter response iterator
+      // this is the first time to be called, initialize exchange iterator
       // and read fist line and do the normal process
       this.states = {};
       for (const [exchange, channels] of Object.entries(this.setting.filter)) {
-        const freq = new FilterRequestImpl(this.clientSetting, setupFilterRequestSetting({
+        const iterator = new ExchangeStreamIterator(
+          this.clientSetting,
           exchange,
           channels,
-          start: this.setting.start,
-          end: this.setting.end,
-          format: this.setting.format,
-        }));
-        const iterator = freq.stream(this.bufferSize)[Symbol.asyncIterator]();
+          this.setting.start,
+          this.setting.end,
+          this.setting.format,
+          this.bufferSize
+        );
         const next = await iterator.next();
 
         // skip if exchange iterator returns no lines at all (empty)

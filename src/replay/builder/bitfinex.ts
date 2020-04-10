@@ -54,6 +54,6 @@ class Impl implements FilterBitfinexChannelsBuilder {
   }
 }
 
-export function filterBitfinex(): FilterBitfinexChannelsBuilder {
+export function bitfinex(): FilterBitfinexChannelsBuilder {
   return new Impl();
 }

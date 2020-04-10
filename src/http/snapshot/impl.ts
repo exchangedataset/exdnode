@@ -5,18 +5,18 @@
 
 import readline from 'readline';
 import { ClientSetting } from "../../client/impl";
-import { SnapshotParam, SnapshotRequest, Snapshot } from "./snapshot";
+import { SnapshotParam, Snapshot } from "./snapshot";
 import { convertDatetimeParam } from "../../utils/datetime";
 import { getResponse } from "../../common/download";
 
-export type SnapshotRequestSetting = {
+export type SnapshotSetting = {
   exchange: string;
   channels: string[];
   at: bigint;
   format: string;
 }
 
-export function setupSnapshotRequestSetting(param: SnapshotParam): SnapshotRequestSetting {
+export function setupSnapshotRequestSetting(param: SnapshotParam): SnapshotSetting {
   if (!('at' in param)) throw new Error('"at" date time was not specified');
 
   if (!('exchange' in param)) throw new Error('"exchange" was not specified');
@@ -48,8 +48,8 @@ async function readResponse(exchange: string, res: NodeJS.ReadableStream): Promi
       
       // it has no additional information
       lineArr.push({
-        channel: split[0],
-        timestamp: BigInt(split[1]),
+        timestamp: BigInt(split[0]),
+        channel: split[1],
         snapshot: split[2],
       });
     });
@@ -58,15 +58,19 @@ async function readResponse(exchange: string, res: NodeJS.ReadableStream): Promi
   });
 }
 
-export class SnapshotRequestImpl implements SnapshotRequest {
-  constructor(private clientSetting: ClientSetting, private setting: SnapshotRequestSetting) {}
-
-  async download(): Promise<Snapshot[]> {
-    const res = await getResponse(
-      this.clientSetting,
-      `snapshot/${this.setting.exchange}/${this.setting.at}`,
-      { topics: this.setting.channels }
-    );
-    return await readResponse(this.setting.exchange, res);
+export async function snapshotDownload(clientSetting: ClientSetting, setting: SnapshotSetting): Promise<Snapshot[]>  {
+  const res = await getResponse(
+    clientSetting,
+    `snapshot/${setting.exchange}/${setting.at}`,
+    {
+      channels: setting.channels,
+      format: setting.format,
+    }
+  );
+  if (res.statusCode === 200) {
+    return await readResponse(setting.exchange, res.stream);
+  } else {
+    // 404, no dataset was found
+    return []
   }
 }

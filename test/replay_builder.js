@@ -1,23 +1,23 @@
 const assert = require('assert');
-const exds = require('../lib/index');
+const { createClient, replay } = require('../lib/index');
 const { APIKEY } = require('./constants');
 
-describe('FilterBuilder', function() {
-  const client = exds.createClient({ apikey: APIKEY });
+describe('ReplayRequestBuilder', function() {
+  const client = createClient({ apikey: APIKEY });
 
   it('throws if no filter was provided', function() {
     assert.throws(function () {
-      client.http.filter().asRaw();
+      client.replay().asRaw();
     });
   });
   it('throws if channels are not provided', function() {
-    assert.throws(function () { client.filter().asRaw() });
+    assert.throws(function () { client.replay().asRaw() });
   });
   it('throws if start was not provided', function() {
     assert.throws(function () {
-      client.http.filter()
+      client.replay()
         .bitmex(
-          exds.filterBitmex()
+          replay.bitmex()
             .orderBookL2()
             .build()
         )
@@ -26,9 +26,9 @@ describe('FilterBuilder', function() {
   });
   it('throws if end was not provided', function() {
     assert.throws(function () {
-      client.http.filter()
+      client.replay()
         .bitmex(
-          exds.filterBitmex()
+          replay.bitmex()
             .orderBookL2()
             .build()
         )
@@ -37,9 +37,9 @@ describe('FilterBuilder', function() {
     });
   });
   it('using range', function() {
-    client.http.filter()
+    client.replay()
       .bitmex(
-        exds.http.filterBitmex()
+        replay.bitmex()
           .orderBookL2()
           .build()
       )
@@ -48,9 +48,9 @@ describe('FilterBuilder', function() {
   });
   it('throw if start and end are the same', function() {
     assert.throws(function () {
-      client.http.filter()
+      client.replay()
         .bitmex(
-          exds.filterBitmex()
+          replay.bitmex()
             .orderBookL2()
             .build()
         )
@@ -60,9 +60,9 @@ describe('FilterBuilder', function() {
   });
   it('throw if start and end are the backwards', function() {
     assert.throws(function () {
-      client.http.filter()
+      client.replay()
         .bitmex(
-          exds.filterBitmex()
+          replay.bitmex()
             .orderBookL2()
             .build()
         )
@@ -70,10 +70,10 @@ describe('FilterBuilder', function() {
         .asRaw();
     });
   });
-  it('builds filter request as raw', function() {
-    client.http.filter()
+  it('builds as raw', function() {
+    client.replay()
       .bitmex(
-        exds.filterBitmex()
+        replay.bitmex()
           .orderBookL2()
           .build()
       )
@@ -81,10 +81,10 @@ describe('FilterBuilder', function() {
       .end(1)
       .asRaw();
   });
-  it('builds filter request as scv like', function() {
-    client.http.filter()
+  it('builds as scv like', function() {
+    client.replay()
       .bitmex(
-        exds.filterBitmex()
+        replay.bitmex()
           .orderBookL2()
           .build()
       )

@@ -2,18 +2,26 @@ const assert = require('assert');
 const { createClient } = require('../lib/index');
 const { APIKEY } = require('./constants');
 
-describe('FilterRequest', function() {
+describe('RawRequest', function() {
   const client = createClient({ apikey: APIKEY });
-  const easyReq = client.http.filter().bitmex(['orderBookL2']).range(26375331).asRaw();
-  const hardStart = (26375331n * 60n + 20n) * 1000000000n;
-  const hardEnd = (26375332n * 60n - 25n) * 1000000000n;
-  const hardReq = client.http.filter()
-    .bitmex(['orderBookL2'])
-    // cut 20 seconds after the beginning of shard
-    .start(hardStart)
-    // truncate 25 seconds before end of shard
-    .end(hardEnd)
-    .asRaw();
+  const easyReq = client.raw({
+    filter: {
+      bitmex: ['orderBookL2']
+    },
+    start: 26430647,
+    end: 26430647,
+    format: 'raw',
+  });
+  const hardStart = (26430647n * 60n + 20n) * 1000000000n;
+  const hardEnd = (26430648n * 60n - 25n) * 1000000000n;
+  const hardReq = client.raw({
+    filter: {
+      bitmex: ['orderBookL2'],
+    },
+    start: hardStart,
+    end: hardEnd,
+    format: 'raw',
+  });
   let downloadParams = [];
   let downloadTruncate = [];
 
@@ -31,7 +39,7 @@ describe('FilterRequest', function() {
       assert.notDeepEqual(res.length, 0, 'returned array empty: expected at least one line');
       // all of timestamps of lines must be within value which caller intended
       for (line of res) {
-        assert.ok(hardStart <= line.timestamp && line.timestamp < hardEnd, `timestamp is out of range of what expected: ${line.timestamp}, exp: ${hardStart} -> ${hardEnd}`);
+        assert.ok(hardStart <= line.timestamp && line.timestamp < hardEnd, `timestamp is out of range of what expected: ${line.timestamp}, exp: ${hardStart} to ${hardEnd}`);
       }
     });
   });

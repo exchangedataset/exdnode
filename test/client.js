@@ -15,13 +15,29 @@ describe('Client', function() {
       });
     });
   });
-  describe('filter', function() {
-    it('creates filter builder', function() {
+  describe('raw', function() {
+    it('creates raw request', function() {
+      let request;
+      assert.doesNotThrow(function () {
+        request = exds.createClient({ apikey: APIKEY }).raw({
+          filter: {
+            bitmex: ['orderBookL2']
+          },
+          start: 0,
+          end: 0,
+          format: 'raw',
+        });
+      });
+      assert.ok('download' in request, 'unexpected object');
+    });
+  });
+  describe('replay', function() {
+    it('creates replay builder', function() {
       let builder;
       assert.doesNotThrow(function () {
-        builder = exds.createClient({ apikey: APIKEY }).http.filter();
+        builder = exds.createClient({ apikey: APIKEY }).replay();
       });
-      assert.ok('configure' in builder, 'unexpected object');
+      assert.ok('asCSVLike' in builder, 'unexpected object');
     });
   });
 });

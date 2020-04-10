@@ -37,7 +37,10 @@ export function httpsGet(
   return new Promise((resolve) => {
     const stringQuery = querystring.stringify(query);
     https.get(`${URL_API}/${resource}?${stringQuery}`, {
-      headers: { Authorization: `Bearer ${clientSetting.apikey}` },
+      headers: {
+        Authorization: `Bearer ${clientSetting.apikey}`,
+        "Accept-Encoding": 'gzip'
+      },
       timeout: clientSetting.timeout,
     }, (res) => resolve(res));
   });

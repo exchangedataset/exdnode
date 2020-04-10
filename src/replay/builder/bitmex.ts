@@ -102,6 +102,6 @@ class Impl implements FilterBitmexChannelsBuilder {
   }
 }
 
-export function filterBitmex(): FilterBitmexChannelsBuilder {
+export function bitmex(): FilterBitmexChannelsBuilder {
   return new Impl();
 }

@@ -5,18 +5,23 @@
 
 import { HTTPModule } from "./http";
 import { ClientSetting } from "../client/impl";
-import { FilterParam, FilterRequest } from "./filter/filter";
-import { SnapshotParam, SnapshotRequest } from "./snapshot/snapshot";
-import { FilterRequestImpl, setupFilterRequestSetting } from "./filter/impl";
-import { SnapshotRequestImpl, setupSnapshotRequestSetting } from "./snapshot/impl";
+import { FilterParam } from "./filter/filter";
+import { SnapshotParam, Snapshot } from "./snapshot/snapshot";
+import { setupFilterRequestSetting, filterDownload } from "./filter/impl";
+import { setupSnapshotRequestSetting, snapshotDownload } from "./snapshot/impl";
+import { Shard } from "../common/line";
 
 export class HTTPModuleImpl implements HTTPModule {
-  constructor(private setting: ClientSetting) {}
+  constructor(private clientSetting: ClientSetting) {}
 
-  filter(param: FilterParam): FilterRequest {
-    return new FilterRequestImpl(this.setting, setupFilterRequestSetting(param));
+  async filter(param: FilterParam): Promise<Shard> {
+    if (typeof param === 'undefined') throw new Error("'param' must be specified")
+    const setting = setupFilterRequestSetting(param)
+    return await filterDownload(this.clientSetting, setting)
   }
-  snapshot(param: SnapshotParam): SnapshotRequest {
-    return new SnapshotRequestImpl(this.setting, setupSnapshotRequestSetting(param));
+  
+  async snapshot(param: SnapshotParam): Promise<Snapshot[]> {
+    if (typeof param === 'undefined') throw new Error("'param' must be specified")
+    return await snapshotDownload(this.clientSetting, setupSnapshotRequestSetting(param));
   }
 }

@@ -72,6 +72,6 @@ class Impl implements FilterBitflyerChannelsBuilder {
   }
 }
 
-export function filterBitflyer(): FilterBitflyerChannelsBuilder {
+export function bitflyer(): FilterBitflyerChannelsBuilder {
   return new Impl();
 }

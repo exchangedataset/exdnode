@@ -9,7 +9,7 @@ import { Filter, checkParamFilter } from "../common/param";
 import { ClientSetting } from "../client/impl";
 import { convertDatetimeParam } from "../utils/datetime";
 import download from "./download";
-import RawStreamIterator from './iterator';
+import RawStreamIterator from './stream/iterator';
 
 export type RawRequestSetting = {
   filter: Filter;

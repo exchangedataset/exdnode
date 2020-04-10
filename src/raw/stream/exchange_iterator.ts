@@ -3,22 +3,25 @@
  * @packageDocumentation
  */
 
-import { ClientSetting } from '../../../client/impl';
-import FilterStreamShardIterator from './shard_iterator';
-import { Line, Shard } from '../../../common/line';
-import { FilterSetting } from '../impl';
+import { ClientSetting } from '../../client/impl';
+import ExchangeStreamShardIterator from './shard_iterator';
+import { Line, Shard } from '../../common/line';
 
-export default class FilterStreamIterator implements AsyncIterator<Line> {
+export default class ExchangeStreamIterator implements AsyncIterator<Line> {
   private shardIterator: AsyncIterator<Shard>;
   private itrNext: IteratorResult<Shard> | null;
   private position: number;
 
   constructor(
     clientSetting: ClientSetting,
-    setting: FilterSetting,
+    exchange: string,
+    channels: string[],
+    start: bigint,
+    end: bigint,
+    format: string,
     bufferSize?: number,
   ) {
-    this.shardIterator = new FilterStreamShardIterator(clientSetting, setting, bufferSize);
+    this.shardIterator = new ExchangeStreamShardIterator(clientSetting, exchange, channels, start, end, format, bufferSize);
     this.itrNext = null;
     this.position = 0;
   }
