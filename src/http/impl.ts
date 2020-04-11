@@ -14,7 +14,7 @@ import { Shard } from "../common/line";
 export class HTTPModuleImpl implements HTTPModule {
   constructor(private clientSetting: ClientSetting) {}
 
-  async filter(param: FilterParam): Promise<Shard> {
+  async filter(param: FilterParam): Promise<Shard<string>> {
     if (typeof param === 'undefined') throw new Error("'param' must be specified")
     const setting = setupFilterRequestSetting(param)
     return await filterDownload(this.clientSetting, setting)

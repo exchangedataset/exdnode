@@ -8,18 +8,18 @@ import { RawRequestSetting } from "../impl";
 import { ClientSetting } from "../../client/impl";
 import ExchangeStreamIterator from "./exchange_iterator";
 
-export default class RawStreamIterator implements AsyncIterator<Line> {
+export default class RawStreamIterator implements AsyncIterator<Line<string>> {
   private states: {
     [key: string]: {
-      iterator: AsyncIterator<Line>;
-      lastLine: Line;
+      iterator: AsyncIterator<Line<string>>;
+      lastLine: Line<string>;
     };
   } | null = null;
   private exchanges: string[] = [];
 
   constructor(private clientSetting: ClientSetting, private setting: RawRequestSetting, private bufferSize?: number) {}
 
-  async next(): Promise<IteratorResult<Line>> {
+  async next(): Promise<IteratorResult<Line<string>>> {
     if (this.states === null) {
       // this is the first time to be called, initialize exchange iterator
       // and read fist line and do the normal process

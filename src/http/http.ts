@@ -9,7 +9,7 @@ export interface HTTPModule {
   /**
    * Create and return request to filter method HTTP-API endpoint.
    */
-  filter(param: FilterParam): Promise<Shard>;
+  filter(param: FilterParam): Promise<Shard<string>>;
   /**
    * Create and return request to snapshot method HTTP-API endpoint.
    */

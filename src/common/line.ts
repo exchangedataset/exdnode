@@ -48,7 +48,7 @@ export enum LineType {
  *
  * @see type
  */
-export type Line = {
+export type Line<T> = {
   /**
    * Exchange on which this line is recorded.
    */
@@ -96,7 +96,7 @@ export type Line = {
    * Can be `undefined` according to `type`.
    * @see type
    */
-  message?: string;
+  message?: T;
 }
 
 /**
@@ -104,4 +104,4 @@ export type Line = {
  * 
  * Shard contains one minute worth of lines at most.
  */
-export type Shard = Line[];
+export type Shard<T> = Line<T>[];

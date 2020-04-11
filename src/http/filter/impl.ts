@@ -78,12 +78,12 @@ function convertLineType(type: string): LineType {
   }
 }
 
-async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promise<Line[]> {
+async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promise<Line<string>[]> {
   return new Promise((resolve, reject) => {
     const lineStream = readline.createInterface({
       input: stream,
     });
-    const lineArr: Line[] = [];
+    const lineArr: Line<string>[] = [];
     lineStream.on('line', (line: string) => {
       const prefix = line.slice(0, 2);
       let split;
@@ -144,7 +144,7 @@ async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promi
   });
 }
 
-export async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<Shard> {
+export async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<Shard<string>> {
   // request and download
   const res = await getResponse(
     clientSetting,
@@ -158,7 +158,7 @@ export async function filterDownload(clientSetting: ClientSetting, setting: Filt
   );
 
   // process stream to get lines
-  let lines: Line[] = [];
+  let lines: Line<string>[] = [];
   if (res.statusCode === 200) {
     /* read lines from the response stream */
     lines = await readLines(setting.exchange, res.stream);

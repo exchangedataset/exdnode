@@ -39,7 +39,7 @@ export type FilterParam = {
  * @param clientParam Client parameter
  * @param param Filter parameter
  */
-export async function filter(clientParam: ClientParam, param: FilterParam): Promise<Shard> {
+export async function filter(clientParam: ClientParam, param: FilterParam): Promise<Shard<string>> {
   if (typeof clientParam === 'undefined') throw new Error("'clientParam' must be specified")
   if (typeof param === 'undefined') throw new Error("'param' must be specified")
   return await filterDownload(setupClientSetting(clientParam), setupFilterRequestSetting(param))

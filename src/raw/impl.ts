@@ -15,7 +15,7 @@ export type RawRequestSetting = {
   filter: Filter;
   start: bigint;
   end: bigint;
-  format: "raw" | "csvlike";
+  format: "raw" | "json";
 }
 
 export function setupRawRequestSetting(param: RawRequestParam): RawRequestSetting {
@@ -48,14 +48,14 @@ export function setupRawRequestSetting(param: RawRequestParam): RawRequestSettin
 export class RawRequestImpl implements RawRequest {
   constructor(private clientSetting: ClientSetting, private setting: RawRequestSetting) {}
 
-  async download(): Promise<Line[]> {
+  async download(): Promise<Line<string>[]> {
     return download(this.clientSetting, this.setting);
   }
-  stream(bufferSize?: number): AsyncIterable<Line> {
+  stream(bufferSize?: number): AsyncIterable<Line<string>> {
     const clientSetting = this.clientSetting;
     const setting = this.setting;
     return {
-      [Symbol.asyncIterator](): AsyncIterator<Line> {
+      [Symbol.asyncIterator](): AsyncIterator<Line<string>> {
         return new RawStreamIterator(clientSetting, setting, bufferSize);
       },
     }

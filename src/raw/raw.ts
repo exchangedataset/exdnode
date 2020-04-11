@@ -24,9 +24,9 @@ export type RawRequestParam = {
   /**
    * What format to receive response with.
    * If you specify raw, then you will get result in raw format that the exchanges are providing with.
-   * If you specify csvlike, then you will get result formatted in csv-like structure.
+   * If you specify json, then you will get result formatted in JSON format.
    */
-  format: "raw" | "csvlike";
+  format: "raw" | "json";
 }
 
 /**
@@ -41,7 +41,7 @@ export interface RawRequest {
   /**
    * Send request and download response in an array.
    */
-  download(): Promise<Line[]>;
+  download(): Promise<Line<string>[]>;
   /**
    * Send request to server and read response by streaming.
    *
@@ -59,7 +59,7 @@ export interface RawRequest {
    * One shard is equavalent to one minute. Optional.
    * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
    */
-  stream(bufferSize?: number): AsyncIterable<Line>;
+  stream(bufferSize?: number): AsyncIterable<Line<string>>;
 }
 
 export function raw(clientParam: ClientParam, param: RawRequestParam): RawRequest {

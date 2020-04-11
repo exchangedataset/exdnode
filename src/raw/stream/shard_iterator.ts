@@ -11,10 +11,10 @@ import { filterDownload, setupFilterRequestSetting } from "../../http/filter/imp
 import { snapshotDownload, setupSnapshotRequestSetting } from "../../http/snapshot/impl";
 import { convertSnapshotToLine } from "../common";
 
-type ShardSlot = { shard?: Shard };
+type ShardSlot = { shard?: Shard<string> };
 type Notifier = (err?: Error) => void;
 
-export default class ExchangeStreamShardIterator implements AsyncIterator<Shard> {
+export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<string>> {
   // fill buffer with null value (means not downloaded)
   private buffer: ShardSlot[] = [];
   private notifier: Notifier | null = null;
@@ -42,7 +42,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard>
     // push empty slot to represent shard downloading
     const slot: ShardSlot = {};
     this.buffer.push(slot);
-    let download: Promise<Shard>;
+    let download: Promise<Shard<string>>;
     if (isFirstShard) {
       // if this shard is the first shard to be downloaded, then
       // it must download snapshot first
@@ -86,7 +86,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard>
     });
   };
 
-  public async next(): Promise<IteratorResult<Shard>> {
+  public async next(): Promise<IteratorResult<Shard<string>>> {
     // if error during download was not handled, reject this promise to let others know
     if (this.error) throw this.error;
 

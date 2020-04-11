@@ -7,9 +7,9 @@ import { ClientSetting } from '../../client/impl';
 import ExchangeStreamShardIterator from './shard_iterator';
 import { Line, Shard } from '../../common/line';
 
-export default class ExchangeStreamIterator implements AsyncIterator<Line> {
-  private shardIterator: AsyncIterator<Shard>;
-  private itrNext: IteratorResult<Shard> | null;
+export default class ExchangeStreamIterator implements AsyncIterator<Line<string>> {
+  private shardIterator: AsyncIterator<Shard<string>>;
+  private itrNext: IteratorResult<Shard<string>> | null;
   private position: number;
 
   constructor(
@@ -26,7 +26,7 @@ export default class ExchangeStreamIterator implements AsyncIterator<Line> {
     this.position = 0;
   }
 
-  async next(): Promise<IteratorResult<Line>> {
+  async next(): Promise<IteratorResult<Line<string>>> {
     if (this.itrNext === null) {
       // get very first shard
       this.itrNext = await this.shardIterator.next();

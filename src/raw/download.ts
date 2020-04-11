@@ -11,12 +11,12 @@ import { setupSnapshotRequestSetting, snapshotDownload } from "../http/snapshot/
 import { convertSnapshotToLine } from "./common";
 import { convertNanosecToMinute } from "../utils/datetime";
 
-class ShardsLineIterator implements Iterator<Line> {
+class ShardsLineIterator implements Iterator<Line<string>> {
   private position = 0;
 
-  constructor(private shards: Shard[]) {}
+  constructor(private shards: Shard<string>[]) {}
 
-  public next(): IteratorResult<Line> {
+  public next(): IteratorResult<Line<string>> {
     // find the line to return
     while (this.shards.length > 0 && this.shards[0].length <= this.position) {
       // this shard is all read
@@ -40,7 +40,7 @@ class ShardsLineIterator implements Iterator<Line> {
   }
 }
 
-type ExchangeShards = { [key: string]: Shard[] };
+type ExchangeShards = { [key: string]: Shard<string>[] };
 
 async function downloadAllShards(clientSetting: ClientSetting, setting: RawRequestSetting): Promise<ExchangeShards> {
   const entries = Object.entries(setting.filter);
@@ -49,9 +49,9 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
 
   const startMinute = convertNanosecToMinute(setting.start);
   const endMinute = convertNanosecToMinute(setting.end);
-  const proms: Promise<Shard[]>[] = [];
+  const proms: Promise<Shard<string>[]>[] = [];
   for (const [exchange, channels] of entries) {
-    const exchangeProms: Promise<Shard>[] = [];
+    const exchangeProms: Promise<Shard<string>>[] = [];
     exchangeProms.push(
       snapshotDownload(clientSetting, setupSnapshotRequestSetting({
         exchange,
@@ -87,14 +87,14 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
   return map;
 }
 
-export default async function download(clientSetting: ClientSetting, setting: RawRequestSetting): Promise<Line[]> {
+export default async function download(clientSetting: ClientSetting, setting: RawRequestSetting): Promise<Line<string>[]> {
   // download all shards, returns an array of shards for each exchange
   const map = await downloadAllShards(clientSetting, setting);
   // stores iterator and last line for each exchange
   const states: {
     [key: string]: {
-      iterator: Iterator<Line>;
-      lastLine: Line;
+      iterator: Iterator<Line<string>>;
+      lastLine: Line<string>;
     };
   } = {};
   const exchanges: string[] = [];
@@ -110,7 +110,7 @@ export default async function download(clientSetting: ClientSetting, setting: Ra
 
   /* it needs to process lines so that it becomes a single array */
   // array to store the result
-  const array: Line[] = []
+  const array: Line<string>[] = []
   while (exchanges.length > 0) {
     // have to set initial value to calculate minimun value
     let argmin: number = exchanges.length-1;
