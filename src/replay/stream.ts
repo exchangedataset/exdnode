@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ReplayMessage } from "./replay";
 import { Line } from "../common/line";
 import { ClientSetting } from "../client/impl";
@@ -9,6 +10,7 @@ import { processRawLines } from "./common";
 export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> {
   private rawItr: AsyncIterator<Line<string>>;
   private defs: { [key: string]: { [key: string ]: ReplayMessageDefinition } } = {};
+  private postFilter: { [key: string]: Set<string> } = {};
 
   constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting) {
     const req = new RawRequestImpl(this.clientSetting, {
@@ -18,37 +20,38 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
       format: "json",
     });
     this.rawItr = req.stream()[Symbol.asyncIterator]();
+    // it needs to post filter
+    for (const [exchange, channels] of Object.entries(setting.filter)) {
+      this.postFilter[exchange] = new Set();
+      for (const channel of channels) {
+        this.postFilter[exchange].add(channel);
+      }
+    }
   }
   
   async next(): Promise<IteratorResult<Line<ReplayMessage>>> {
-    const nx = await this.rawItr.next();
-    if (nx.done) {
-      return {
-        done: true,
-        value: null,
-      };
-    }
-    const line = nx.value;
-    const exchange = line.exchange;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const channel = line.channel!;
-    if (!(exchange in this.defs)) {
-      // this is the first line for this exchange
-      this.defs[exchange] = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        [channel]: JSON.parse(line.message!)
+    while (true) {
+      const nx = await this.rawItr.next();
+      if (nx.done) {
+        return {
+          done: true,
+          value: null,
+        };
       }
-    }
-    if (!(channel in this.defs[exchange])) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.defs[exchange][channel] = JSON.parse(line.message!)
-    }
+      const line = nx.value;
+  
+      const processed = processRawLines(this.defs, line);
 
-    const processed = processRawLines(this.defs[exchange][channel], line);
+      if (processed === null) {
+        continue;
+      }
 
-    return {
-      done: false,
-      value: processed,
+      if (this.postFilter[processed.exchange].has(processed.channel!)) {
+        return {
+          done: false,
+          value: processed,
+        };
+      }
     }
   }
 }

@@ -7,21 +7,21 @@ describe('ReplayRequestBuilder', function() {
 
   it('throws if no filter was provided', function() {
     assert.throws(function () {
-      client.replay().asRaw();
+      client.replay().build();
     });
   });
   it('throws if channels are not provided', function() {
-    assert.throws(function () { client.replay().asRaw() });
+    assert.throws(function () { client.replay().build() });
   });
   it('throws if start was not provided', function() {
     assert.throws(function () {
       client.replay()
         .bitmex(
           replay.bitmex()
-            .orderBookL2()
+            .orderBookL2(["XBTUSD"])
             .build()
         )
-        .asRaw();
+        .build();
     });
   });
   it('throws if end was not provided', function() {
@@ -29,33 +29,33 @@ describe('ReplayRequestBuilder', function() {
       client.replay()
         .bitmex(
           replay.bitmex()
-            .orderBookL2()
+            .orderBookL2(["XBTUSD"])
             .build()
         )
         .start(0)
-        .asRaw();
+        .build();
     });
   });
   it('using range', function() {
     client.replay()
       .bitmex(
         replay.bitmex()
-          .orderBookL2()
+          .orderBookL2(["XBTUSD"])
           .build()
       )
       .range(0, 1)
-      .asRaw();
+      .build();
   });
   it('throw if start and end are the same', function() {
     assert.throws(function () {
       client.replay()
         .bitmex(
           replay.bitmex()
-            .orderBookL2()
+            .orderBookL2(["XBTUSD"])
             .build()
         )
         .range(BigInt(1), BigInt(1))
-        .asRaw();
+        .build();
     });
   });
   it('throw if start and end are the backwards', function() {
@@ -63,32 +63,22 @@ describe('ReplayRequestBuilder', function() {
       client.replay()
         .bitmex(
           replay.bitmex()
-            .orderBookL2()
+            .orderBookL2(["XBTUSD"])
             .build()
         )
         .range(5, 4)
-        .asRaw();
+        .build();
     });
   });
-  it('builds as raw', function() {
+  it('build', function() {
     client.replay()
       .bitmex(
         replay.bitmex()
-          .orderBookL2()
+          .orderBookL2(["XBTUSD"])
           .build()
       )
       .start(0)
       .end(1)
-      .asRaw();
-  });
-  it('builds as scv like', function() {
-    client.replay()
-      .bitmex(
-        replay.bitmex()
-          .orderBookL2()
-          .build()
-      )
-      .range(0, 1)
-      .asCSVLike();
+      .build();
   });
 })

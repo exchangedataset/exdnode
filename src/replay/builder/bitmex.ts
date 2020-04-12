@@ -38,7 +38,7 @@ export interface FilterBitmexChannelsBuilder {
    * Full level 2 order book.
    * @returns this
    */
-  orderBookL2(): FilterBitmexChannelsBuilder;
+  orderBookL2(pairs: string[]): FilterBitmexChannelsBuilder;
   /**
    * System-wide notifications.
    * @returns this
@@ -53,14 +53,14 @@ export interface FilterBitmexChannelsBuilder {
    * Live trades.
    * @returns this
    */
-  trade(): FilterBitmexChannelsBuilder;
+  trade(pairs: string[]): FilterBitmexChannelsBuilder;
   /**
    * Add an arbitrary channels.
    * 
    * Note that channels that does not included in this builder might not be supported by Exchangedataset API.
    * @returns this
    */
-  channels(chs: string[]): FilterBitmexChannelsBuilder;
+  channels(pairs: string[]): FilterBitmexChannelsBuilder;
   /**
    * Build this bulder to get channels.
    * Can be called more than once.
@@ -86,10 +86,10 @@ class Impl implements FilterBitmexChannelsBuilder {
   instrument(): FilterBitmexChannelsBuilder { return this.channels(['instrument']); }
   insurance(): FilterBitmexChannelsBuilder { return this.channels(['insurance']); }
   liquidation(): FilterBitmexChannelsBuilder { return this.channels(['liquidation']); }
-  orderBookL2(): FilterBitmexChannelsBuilder { return this.channels(['orderBookL2']); }
+  orderBookL2(pairs: string[]): FilterBitmexChannelsBuilder { return this.channels(pairs.map((pair) => `orderBookL2_${pair}`)); }
   publicNotifications(): FilterBitmexChannelsBuilder { return this.channels(['publicNotifications']); }
   settlement(): FilterBitmexChannelsBuilder { return this.channels(['settlement']); }
-  trade(): FilterBitmexChannelsBuilder { return this.channels(['trade']); }
+  trade(pairs: string[]): FilterBitmexChannelsBuilder { return this.channels(pairs.map((pair) => `trade_${pair}`)); }
 
   channels(chs: string[]): FilterBitmexChannelsBuilder {
     this.stored.push(...chs);

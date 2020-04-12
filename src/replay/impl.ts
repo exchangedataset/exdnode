@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /**
  * @internal
  * @packageDocumentation
@@ -77,28 +78,31 @@ export class ReplayRequestImpl implements ReplayRequest {
       format: "json",
     }));
 
+    const postFilter: { [key: string]: Set<string> } = {};
+    for (const [exchange, channels] of Object.entries(this.setting.filter)) {
+      postFilter[exchange] = new Set();
+      for (const channel of channels) {
+        postFilter[exchange].add(channel);
+      }
+    }
+
     const array = await req.download();
     const result = Array(array.length)
     const defs: { [key: string]: { [key: string]: ReplayMessageDefinition } } = {};
     
+    let j = 0;
     for (let i = 0; i < array.length; i++) {
-      const exchange = array[i].exchange;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const channel = array[i].channel!;
-      if (!(exchange in defs)) {
-        // this is the first line for this exchange
-        defs[exchange] = {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          [channel]: JSON.parse(array[i].message!)
-        }
+      const processed = processRawLines(defs, array[i]);
+      if (processed === null) {
+        continue;
       }
-      if (!(channel in defs[exchange])) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        defs[exchange][channel] = JSON.parse(array[i].message!);
+      if (!postFilter[processed.exchange!].has(processed.channel!)) {
+        continue;
       }
-      result[i] = processRawLines(defs[exchange][channel], array[i]);
+      result[j] = processed;
+      j++;
     }
-    return result;
+    return result.slice(0, j);
   }
 
   stream(): AsyncIterable<Line<ReplayMessage>> {

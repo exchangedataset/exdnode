@@ -37,10 +37,10 @@ export function setupSnapshotRequestSetting(param: SnapshotParam): SnapshotSetti
   }
 }
 
-async function readResponse(exchange: string, res: NodeJS.ReadableStream): Promise<Snapshot[]> {
+async function readResponse(stream: NodeJS.ReadableStream): Promise<Snapshot[]> {
   return new Promise((resolve, reject) => {
     const lineStream = readline.createInterface({
-      input: res,
+      input: stream,
     });
     const lineArr: Snapshot[] = [];
     lineStream.on('line', (line: string) => {
@@ -53,7 +53,8 @@ async function readResponse(exchange: string, res: NodeJS.ReadableStream): Promi
         snapshot: split[2],
       });
     });
-    lineStream.on('error', (error: Error) => reject(error));
+    stream.on('error', (error: Error) => reject(new Error(`Catched upper stream error: ${error.message}`)));
+    lineStream.on('error', (error: Error) => reject(new Error(`Catched line stream error: ${error.message}`)));
     lineStream.on('close', () => resolve(lineArr));
   });
 }
@@ -68,7 +69,7 @@ export async function snapshotDownload(clientSetting: ClientSetting, setting: Sn
     }
   );
   if (res.statusCode === 200) {
-    return await readResponse(setting.exchange, res.stream);
+    return await readResponse(res.stream);
   } else {
     // 404, no dataset was found
     return []

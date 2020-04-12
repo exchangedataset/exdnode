@@ -139,7 +139,8 @@ async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promi
           break;
       }
     });
-    lineStream.on('error', (error: Error) => reject(error));
+    stream.on('error', (error: Error) => reject(new Error(`Catched upper stream error: ${error.message}`)));
+    lineStream.on('error', (error: Error) => reject(new Error(`Catched line stream error: ${error.message}`)));
     lineStream.on('close', () => resolve(lineArr));
   });
 }

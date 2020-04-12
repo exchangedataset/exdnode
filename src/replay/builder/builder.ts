@@ -85,15 +85,9 @@ export interface ReplayRequestBuilder {
    */
   range(start: AnyDateInstance, end?: AnyDateInstance): ReplayRequestBuilder;
   /**
-   * Build this and get {@link ReplayRequest}.
-   * You will get result in raw format that the exchanges are providing with.
+   * Build and get {@link ReplayRequest}.
    */
-  asRaw(): ReplayRequest;
-  /**
-   * Build this and get {@link ReplayRequest}.
-   * You will get result formatted in csv-like structure.
-   */
-  asCSVLike(): ReplayRequest;
+  build(): ReplayRequest;
 }
 
 export * from './bitmex';

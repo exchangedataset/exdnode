@@ -4,12 +4,10 @@
  */
 
 import { ReplayRequestBuilder } from "./builder";
-import { ReplayRequest } from "../replay";
+import { ReplayRequest, ReplayRequestParam } from "../replay";
 import { AnyDateInstance } from "../../utils/datetime";
 import { ClientSetting } from "../../client/impl";
-import { setupRawRequestSetting } from "../../raw/impl";
-import { RawRequestParam } from "../../raw/raw";
-import { ReplayRequestImpl } from "../impl";
+import { ReplayRequestImpl, setupReplayRequestSetting } from "../impl";
 
 export class ReplayRequestBuilderImpl implements ReplayRequestBuilder {
   private config: { [key: string]: any } = {
@@ -19,7 +17,7 @@ export class ReplayRequestBuilderImpl implements ReplayRequestBuilder {
   constructor(private clientSetting: ClientSetting) {}
 
   build(): ReplayRequest {
-    return new ReplayRequestImpl(this.clientSetting, setupRawRequestSetting(this.config as RawRequestParam));
+    return new ReplayRequestImpl(this.clientSetting, setupReplayRequestSetting(this.config as ReplayRequestParam));
   }
 
   bitmex(channels: string[]): ReplayRequestBuilder {
@@ -52,14 +50,5 @@ export class ReplayRequestBuilderImpl implements ReplayRequestBuilder {
   }
   range(start: AnyDateInstance, end?: AnyDateInstance): ReplayRequestBuilder {
     return this.start(start).end(typeof end === 'undefined' ? start : end);
-  }
-
-  asRaw(): ReplayRequest {
-    this.config.format = 'none';
-    return this.build();
-  }
-  asCSVLike(): ReplayRequest {
-    this.config.format = 'csvlike';
-    return this.build();
   }
 }

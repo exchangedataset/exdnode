@@ -37,7 +37,7 @@ describe('Client', function() {
       assert.doesNotThrow(function () {
         builder = exds.createClient({ apikey: APIKEY }).replay();
       });
-      assert.ok('asCSVLike' in builder, 'unexpected object');
+      assert.ok('build' in builder, 'unexpected object');
     });
   });
 });

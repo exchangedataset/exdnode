@@ -40,7 +40,12 @@ export async function getResponse(
     } catch (e) {
       error = msg;
     }
-    throw new Error(`Request failed: ${statusCode} ${error}\nPlease check the internet connection and the remaining quota of your API key`);
+    throw new Error(`Request failed: ${statusCode} ${error} for ${resource}\nPlease check the internet connection and the remaining quota of your API key`);
+  }
+  // check content type
+  const contentType = headers['content-type'];
+  if (contentType !== 'text/plain') {
+    throw new Error(`Invalid response content-type, expected: 'text/plain' got: '${contentType}'`);
   }
   // check for compression
   if ('content-encoding' in headers) {
@@ -52,12 +57,8 @@ export async function getResponse(
       throw new Error(`found '${contentEncoding}' in Content-Encoding header, but it is not supported`)
     }
     const gunzip = createGunzip()
+    gunzip.setEncoding("utf-8");
     return {statusCode, stream: res.pipe(gunzip)}
-  }
-  // check content type
-  const contentType = headers['content-type'];
-  if (contentType !== 'text/plain') {
-    throw new Error(`Invalid response content-type, expected: 'text/plain' got: '${contentType}'`);
   }
 
   return {statusCode, stream: res};
