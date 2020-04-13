@@ -17,14 +17,16 @@ export function convertDatetimeParam(datetime: AnyDateInstance): bigint {
     return datetime;
   }
   let tmp = datetime;
-  let unixtime;
   if (typeof tmp === 'string') {
     // convert string to date, it will later be converted into minutes from utc
     tmp = new Date(tmp);
   }
   if (tmp instanceof Date) {
-    unixtime = tmp.getTime();
-  } else if (typeof tmp === 'number') {
+    return BigInt(tmp.getTime()) * BigInt('1000000');
+  }
+  
+  let unixtime;
+  if (typeof tmp === 'number') {
     // minute in integer form
     if (!Number.isInteger(tmp)) throw TypeError('Parameter "datetime" as minutes must be an integer');
     unixtime = tmp * 60;
