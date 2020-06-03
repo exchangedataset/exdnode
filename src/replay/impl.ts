@@ -10,10 +10,8 @@ import { Filter, checkParamFilter } from "../common/param";
 import { ClientSetting } from "../client/impl";
 import { convertDatetimeParam } from "../utils/datetime";
 import { RawRequestImpl, setupRawRequestSetting } from "../raw/impl";
-import { processRawLines } from "./common";
+import RawLineProcessor from "./common";
 import { ReplayStreamIterator } from "./stream";
-
-export type ReplayMessageDefinition = { [key: string]: string };
 
 export type ReplayRequestSetting = {
   filter: Filter;
@@ -88,11 +86,11 @@ export class ReplayRequestImpl implements ReplayRequest {
 
     const array = await req.download();
     const result = Array(array.length)
-    const defs: { [key: string]: { [key: string]: ReplayMessageDefinition } } = {};
+    const processor = new RawLineProcessor();
     
     let j = 0;
     for (let i = 0; i < array.length; i++) {
-      const processed = processRawLines(defs, array[i]);
+      const processed = processor.processRawLines(array[i]);
       if (processed === null) {
         continue;
       }

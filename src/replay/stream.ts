@@ -2,14 +2,14 @@
 import { ReplayMessage } from "./replay";
 import { Line } from "../common/line";
 import { ClientSetting } from "../client/impl";
-import { ReplayRequestSetting, convertReplayFilterToRawFilter, ReplayMessageDefinition } from "./impl";
+import { ReplayRequestSetting, convertReplayFilterToRawFilter } from "./impl";
 import { RawRequestImpl } from "../raw/impl";
-import { processRawLines } from "./common";
+import RawLineProcessor from "./common";
 
 
 export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> {
   private rawItr: AsyncIterator<Line<string>>;
-  private defs: { [key: string]: { [key: string ]: ReplayMessageDefinition } } = {};
+  private processor: RawLineProcessor;
   private postFilter: { [key: string]: Set<string> } = {};
 
   constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting) {
@@ -27,6 +27,7 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
         this.postFilter[exchange].add(channel);
       }
     }
+    this.processor = new RawLineProcessor();
   }
   
   async next(): Promise<IteratorResult<Line<ReplayMessage>>> {
@@ -40,7 +41,7 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
       }
       const line = nx.value;
   
-      const processed = processRawLines(this.defs, line);
+      const processed = this.processor.processRawLines(line);
 
       if (processed === null) {
         continue;

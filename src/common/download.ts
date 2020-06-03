@@ -40,7 +40,7 @@ export async function getResponse(
     } catch (e) {
       error = msg;
     }
-    throw new Error(`Request failed: ${statusCode} ${error} for ${resource}\nPlease check the internet connection and the remaining quota of your API key`);
+    throw new Error(`${resource}: Request failed: ${statusCode} ${error}\nPlease check the internet connection and the remaining quota of your API key`);
   }
   // check content type
   const contentType = headers['content-type'];

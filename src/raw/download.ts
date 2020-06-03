@@ -10,6 +10,7 @@ import { setupFilterRequestSetting as setupFilterRequestSetting, filterDownload}
 import { setupSnapshotRequestSetting, snapshotDownload } from "../http/snapshot/impl";
 import { convertSnapshotToLine } from "./common";
 import { convertNanosecToMinute } from "../utils/datetime";
+import { DOWNLOAD_BATCH_SIZE } from "../constants";
 
 class ShardsLineIterator implements Iterator<Line<string>> {
   private position = 0;
@@ -49,10 +50,13 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
 
   const startMinute = convertNanosecToMinute(setting.start);
   const endMinute = convertNanosecToMinute(setting.end);
-  const proms: Promise<Shard<string>[]>[] = [];
+
+  const excShards: Shard<string>[][] = [];
   for (const [exchange, channels] of entries) {
-    const exchangeProms: Promise<Shard<string>>[] = [];
-    exchangeProms.push(
+    const resolvedBatches: Shard<string>[][] = [];
+
+    let batch: Promise<Shard<string>>[] = [];
+    batch.push(
       snapshotDownload(clientSetting, setupSnapshotRequestSetting({
         exchange,
         channels,
@@ -60,8 +64,12 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
         format: setting.format,
       })).then((sss) => sss.map((ss) => convertSnapshotToLine(exchange, ss)))
     );
+
+    // Promise.all ing all of them will cause server to overload
+    // divide it by batch and download one by one
+    let i = 1;
     for (let minute = startMinute; minute <= endMinute; minute++) {
-      exchangeProms.push(
+      batch.push(
         filterDownload(clientSetting, setupFilterRequestSetting({
           exchange,
           channels,
@@ -71,17 +79,26 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
           format: setting.format,
         }))
       );
+      i++;
+      if (i >= DOWNLOAD_BATCH_SIZE) {
+        // wait for the whole batch to be resolved
+        const batchResolved = await Promise.all(batch);
+        resolvedBatches.push(batchResolved);
+        batch = [];
+        i = 0;
+      }
     }
-    proms.push(Promise.all(exchangeProms))
+    if (batch.length > 0) {
+        const batchResolved = await Promise.all(batch);
+        resolvedBatches.push(batchResolved);
+    }
+    excShards.push(resolvedBatches.flat(1))
   }
-
-  // wait download and processing of all shards
-  const result = await Promise.all(proms);
 
   // set shards to map from array index
   for (let i = 0; i < entries.length; i++) {
     const [exchange] = entries[i];
-    map[exchange] = result[i];
+    map[exchange] = excShards[i];
   }
 
   return map;

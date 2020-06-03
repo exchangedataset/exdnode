@@ -34,14 +34,16 @@ export function httpsGet(
   resource: string,
   query: ParsedUrlQueryInput,
 ): Promise<IncomingMessage> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const stringQuery = querystring.stringify(query);
-    https.get(`${URL_API}/${resource}?${stringQuery}`, {
+    const res = https.get(`${URL_API}/${resource}?${stringQuery}`, {
       headers: {
         Authorization: `Bearer ${clientSetting.apikey}`,
         "Accept-Encoding": 'gzip'
       },
       timeout: clientSetting.timeout,
     }, (res) => resolve(res));
+    res.on('error', reject);
+    res.end();
   });
 }
