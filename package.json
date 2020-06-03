@@ -6,10 +6,12 @@
   },
   "description": "Node.js version of Exchangedataset historical cryptocurrency market data streaming service",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/*"],
   "scripts": {
     "test": "yarn run build && yarn mocha",
     "build": "tsc --declaration",
-    "doc": "yarn typedoc --stripInternal --out doc/"
+    "doc": "yarn typedoc --stripInternal --out docs/"
   },
   "keywords": [
     "cryptocurrency-market",
