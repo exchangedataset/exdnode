@@ -1,0 +1,324 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>&quot;common/line&quot; | exchangedataset-node</title>
+	<meta name="description" content="Documentation for exchangedataset-node">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">exchangedataset-node</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_common_line_.html">&quot;common/line&quot;</a>
+				</li>
+			</ul>
+			<h1>Module &quot;common/line&quot;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Enumerations</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-enum tsd-parent-kind-module"><a href="../enums/_common_line_.linetype.html" class="tsd-kind-icon">Line<wbr>Type</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="_common_line_.html#line" class="tsd-kind-icon">Line</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="_common_line_.html#shard" class="tsd-kind-icon">Shard</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="line" class="tsd-anchor"></a>
+					<h3>Line</h3>
+					<div class="tsd-signature tsd-kind-icon">Line&lt;T&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>channel<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>exchange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">T</a><span class="tsd-signature-symbol">; </span>timestamp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_common_line_.linetype.html" class="tsd-signature-type">LineType</a><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in common/line.ts:51</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Data structure of a single line from a response.</p>
+						</div>
+						<p><code>exchange</code>, <code>type</code> and <code>timestamp</code> is always present, <strong>but <code>channel</code> or <code>message</code> is not.</strong>
+						This is because with certain <code>type</code>, a line might not contain <code>channel</code> or <code>message</code>, or both.</p>
+						<dl class="tsd-comment-tags">
+							<dt>see</dt>
+							<dd><p>type</p>
+							</dd>
+						</dl>
+					</div>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T</h4>
+						</li>
+					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> channel<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Channel name which this line is assosiated with.
+										Can be <code>undefined</code> according to <code>type</code>.</p>
+									</div>
+									<dl class="tsd-comment-tags">
+										<dt>see</dt>
+										<dd><p>type</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>exchange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Exchange on which this line is recorded.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> message<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">T</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Message.
+										Can be <code>undefined</code> according to <code>type</code>.</p>
+									</div>
+									<dl class="tsd-comment-tags">
+										<dt>see</dt>
+										<dd><p>type</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>timestamp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Timestamp in nano seconds in unixtime-compatible format (unixtime * 10^9 + nanosec-part)
+											of this line was recorded.
+										Timezone is UTC.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><a href="../enums/_common_line_.linetype.html" class="tsd-signature-type">LineType</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If <code>type === LineType.MESSAGE</code>, then a line is a normal message.
+											All of value are present.
+										You can get an assosiated channel by <code>channel</code>, and its message by <code>message</code>.</p>
+									</div>
+									<p>If <code>type === LineType.SEND</code>, then a line is a request server sent when the dataset was
+										recorded.
+									All of value are present, though you can ignore this line.</p>
+									<p>If <code>type === LineType.START</code>, then a line marks the start of new continuous recording of the
+										dataset.
+										Only <code>channel</code> is not present. <code>message</code> is the URL which used to record the dataset.
+										You might want to initialize your work since this essentially means new connection to
+									exchange&#39;s API.</p>
+									<p>If <code>type === LineType.END</code>, then a line marks the end of continuous recording of the dataset.
+										Other than <code>type</code> and <code>timestamp</code> are not present.
+									You might want to perform some functionality when the connection to exchange&#39;s API was lost.</p>
+									<p>If <code>type === LineType.ERROR</code>, then a line contains error message when recording the dataset.
+										Only <code>channel</code> is not present. <code>message</code> is the error message.
+									You want to ignore this line.</p>
+									<dl class="tsd-comment-tags">
+										<dt>see</dt>
+										<dd><p>FilterLine</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="shard" class="tsd-anchor"></a>
+					<h3>Shard</h3>
+					<div class="tsd-signature tsd-kind-icon">Shard&lt;T&gt;<span class="tsd-signature-symbol">:</span> <a href="_common_line_.html#line" class="tsd-signature-type">Line</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in common/line.ts:107</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Shard is continuous flattened collection of datasets.</p>
+						</div>
+						<p>Shard contains one minute worth of lines at most.</p>
+					</div>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T</h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_client_client_.html">&quot;client/client&quot;</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="_common_line_.html">&quot;common/line&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_common_param_.html">&quot;common/param&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_constants_.html">&quot;constants&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_http_filter_filter_.html">&quot;http/filter/filter&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_http_http_.html">&quot;http/http&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_http_snapshot_snapshot_.html">&quot;http/snapshot/snapshot&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_raw_raw_.html">&quot;raw/raw&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_builder_bitfinex_.html">&quot;replay/builder/bitfinex&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_builder_bitflyer_.html">&quot;replay/builder/bitflyer&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_builder_bitmex_.html">&quot;replay/builder/bitmex&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_builder_builder_.html">&quot;replay/builder/builder&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_common_.html">&quot;replay/common&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_replay_.html">&quot;replay/replay&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_replay_stream_.html">&quot;replay/stream&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum tsd-parent-kind-module">
+						<a href="../enums/_common_line_.linetype.html" class="tsd-kind-icon">Line<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_common_line_.html#line" class="tsd-kind-icon">Line</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_common_line_.html#shard" class="tsd-kind-icon">Shard</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
