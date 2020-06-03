@@ -8,7 +8,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "yarn run build && yarn mocha",
-    "build": "tsc",
+    "build": "tsc --declaration",
     "doc": "yarn typedoc --stripInternal --out doc/"
   },
   "keywords": [
