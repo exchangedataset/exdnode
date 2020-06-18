@@ -103,11 +103,11 @@ export class ReplayRequestImpl implements ReplayRequest {
     return result.slice(0, j);
   }
 
-  stream(): AsyncIterable<Line<ReplayMessage>> {
+  stream(bufferSize?: number): AsyncIterable<Line<ReplayMessage>> {
     const { clientSetting, setting } = this;
     return {
       [Symbol.asyncIterator](): AsyncIterator<Line<ReplayMessage>> {
-        return new ReplayStreamIterator(clientSetting, setting);
+        return new ReplayStreamIterator(clientSetting, setting, bufferSize);
       },
     }
   }

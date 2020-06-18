@@ -50,14 +50,14 @@ export interface RawRequest {
    * Iterator yields immidiately if a line is bufferred, waits for download if not avaliable.
    *
    * **Please note that buffering won't start by calling this method,**
-   * **calling {@link AsyncIterable.[Symbol.asyncIterator]} will.**
+   * **calling {@link AsyncIterator.next()} will.**
    *
    * Higher responsiveness than {@link download} is expected as it does not have to wait for
    * the entire data to be downloaded.
    *
-   * @param bufferSize Desired buffer size to store streaming data.
-   * One shard is equavalent to one minute. Optional.
-   * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
+   * @param bufferSize Optional. Desired buffer size to store streaming data.
+   * One shard is equavalent to one minute.
+   * @returns Object implements `AsyncIterable` from which iterator that yields response line by line from buffer can be obtained.
    */
   stream(bufferSize?: number): AsyncIterable<Line<string>>;
 }

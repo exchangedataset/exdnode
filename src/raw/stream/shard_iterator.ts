@@ -4,7 +4,7 @@
  */
 
 import { ClientSetting } from "../../client/impl";
-import { FILTER_DEFAULT_BUFFER_SIZE } from "../../constants";
+import { DEFAULT_BUFFER_SIZE } from "../../constants";
 import { convertNanosecToMinute } from "../../utils/datetime";
 import { Shard } from "../../common/line";
 import { filterDownload, setupFilterRequestSetting } from "../../http/filter/impl";
@@ -29,10 +29,11 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     private start: bigint,
     private end: bigint,
     private format: string,
-    bufferSize: number = FILTER_DEFAULT_BUFFER_SIZE,
+    bufferSize: number = DEFAULT_BUFFER_SIZE,
   ) {
     this.nextDownloadMinute = convertNanosecToMinute(start);
-    this.endMinute = convertNanosecToMinute(end);
+    // end is exclusive
+    this.endMinute = convertNanosecToMinute(end - BigInt(1));
     // start downloading shards to fill buffer
     for (let i = 0; i < bufferSize && this.nextDownloadMinute <= this.endMinute; i += 1) this.downloadNewShard();
   }

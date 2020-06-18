@@ -22,7 +22,7 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
   async next(): Promise<IteratorResult<Line<string>>> {
     if (this.states === null) {
       // this is the first time to be called, initialize exchange iterator
-      // and read fist line and do the normal process
+      // and read first line and do the normal process
       this.states = {};
       for (const [exchange, channels] of Object.entries(this.setting.filter)) {
         const iterator = new ExchangeStreamIterator(
@@ -58,7 +58,7 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
     // return the line that has the smallest timestamp of all shards of each exchange
     let argmin = this.exchanges.length - 1;
     let min = this.states[this.exchanges[argmin]].lastLine.timestamp;
-    for (let i = this.exchanges.length - 2; i >= 0; i--) {
+    for (let i = 0; i < this.exchanges.length - 1; i++) {
       const lastLine = this.states[this.exchanges[i]].lastLine;
       if (lastLine.timestamp < min) {
         argmin = i;

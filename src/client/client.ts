@@ -26,7 +26,7 @@ export interface Client {
    */
   http: HTTPModule;
   /**
-   * Lower-level API that process data from Exchangedataset HTTP-API and
+   * Lower-level API that processes data from Exchangedataset HTTP-API and
    * generate raw (close to exchanges' format) data.
    */
   raw(param: RawRequestParam): RawRequest;

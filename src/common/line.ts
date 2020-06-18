@@ -1,8 +1,8 @@
 /**
  * Enum of Line Type.
  *
- * Line Type shows what type of a line it is, such as message line or start line.
- * Lines with different types contain different information and have to be treated differently.
+ * Line Type shows what type of a line is, such as message line or start line.
+ * Lines with different types contain different information and have to be treated accordingly.
  *
  * @see FilterLine
  */
@@ -10,6 +10,7 @@ export enum LineType {
   /**
    * Message Line Type.
    * 
+   * Contains message sent from exchanges' server.
    * This is the most usual Line Type.
    */
   MESSAGE = 'msg',
@@ -35,7 +36,7 @@ export enum LineType {
    * Error Line Type.
    * 
    * Used when error occurrs on recording.
-   * Used in both server-side error and client-side error.
+   * Used in both server-side error and client-side (our client who receive WebSocket data) error.
    */
   ERROR = 'err',
 }
@@ -50,7 +51,7 @@ export enum LineType {
  */
 export type Line<T> = {
   /**
-   * Exchange on which this line is recorded.
+   * Name of exchange from which this line is recorded.
    */
   exchange: string;
   /**
@@ -80,8 +81,9 @@ export type Line<T> = {
    */
   type: LineType;
   /**
-   * Timestamp in nano seconds in unixtime-compatible format (unixtime * 10^9 + nanosec-part)
-   * of this line was recorded.
+   * Timestamp in nano seconds of this line was recorded.
+   * 
+   * Timestamp is in unixtime-compatible format (unixtime * 10^9 + nanosec-part).
    * Timezone is UTC.
    */
   timestamp: bigint;

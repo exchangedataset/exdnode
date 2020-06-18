@@ -12,14 +12,14 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
   private processor: RawLineProcessor;
   private postFilter: { [key: string]: Set<string> } = {};
 
-  constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting) {
+  constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting, bufferSize?: number) {
     const req = new RawRequestImpl(this.clientSetting, {
       filter: convertReplayFilterToRawFilter(this.setting.filter),
       start: this.setting.start,
       end: this.setting.end,
       format: "json",
     });
-    this.rawItr = req.stream()[Symbol.asyncIterator]();
+    this.rawItr = req.stream(bufferSize)[Symbol.asyncIterator]();
     // it needs to post filter
     for (const [exchange, channels] of Object.entries(setting.filter)) {
       this.postFilter[exchange] = new Set();

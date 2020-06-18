@@ -8,14 +8,15 @@ describe('RawRequest', function() {
     filter: {
       bitmex: ['orderBookL2']
     },
-    start: 26430647,
-    end: 26430647,
+    start: 26297280,
+    end: 26297280,
     format: 'raw',
   });
-  const hardStart = (26430647n * 60n + 20n) * 1000000000n;
-  const hardEnd = (26430648n * 60n - 25n) * 1000000000n;
+  const hardStart = (26297280n * 60n + 20n) * 1000000000n;
+  const hardEnd = (26297281n * 60n - 25n) * 1000000000n;
   const hardReq = client.raw({
     filter: {
+      bitflyer: ['lightning_board_FX_BTC_JPY'],
       bitmex: ['orderBookL2'],
     },
     start: hardStart,
@@ -32,7 +33,7 @@ describe('RawRequest', function() {
       downloadParams = res;
       assert.notDeepEqual(res.length, 0, 'returned array empty: expected at least one line');
     });
-    it('multiple shard', async function() {
+    it('multiple exchanges', async function() {
       this.timeout(20000);
       const res = await hardReq.download();
       downloadTruncate = res;
@@ -40,6 +41,8 @@ describe('RawRequest', function() {
       // all of timestamps of lines must be within value which caller intended
       for (line of res) {
         assert.ok(hardStart <= line.timestamp && line.timestamp < hardEnd, `timestamp is out of range of what expected: ${line.timestamp}, exp: ${hardStart} to ${hardEnd}`);
+        assert.deepStrictEqual(typeof line.channel, "string", "expected string as channel:"+line.channel)
+        assert.deepStrictEqual(typeof line.message, "string", "expected string as message:"+line.message)
       }
     });
   });
@@ -54,7 +57,7 @@ describe('RawRequest', function() {
       }
       assert.deepEqual(count, downloadParams.length, 'line count is different');
     });
-    it('multiple shard', async function() {
+    it('multiple exchanges', async function() {
       this.timeout(20000);
       const stream = hardReq.stream();
       let count = 0;

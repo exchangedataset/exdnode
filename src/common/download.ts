@@ -54,7 +54,7 @@ export async function getResponse(
 
     // only gzip is supported
     if (contentEncoding !== 'gzip') {
-      throw new Error(`found '${contentEncoding}' in Content-Encoding header, but it is not supported`)
+      throw new Error(`Found '${contentEncoding}' in Content-Encoding header, but it is not supported`)
     }
     const gunzip = createGunzip()
     gunzip.setEncoding("utf-8");

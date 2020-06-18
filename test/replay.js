@@ -10,7 +10,7 @@ describe('Replay', function() {
         .orderBookL2(["XBTUSD"])
         .build()
     )
-    .range(26430647, 26430650)
+    .range(26297280)
     .build();
   let easy;
 
@@ -25,6 +25,9 @@ describe('Replay', function() {
     let count = 0;
     for await (const line of stream) {
       assert.deepEqual(easy[count].message, line.message, 'line is different');
+      assert.deepStrictEqual(typeof line.channel, "string", "expected string as channel:"+line.channel)
+      assert.ok(typeof line.message === "object" || typeof line.message === "string", "expected string or object as a message:"+JSON.stringify(line.message))
+      console.log(line)
       count++;
     }
     assert.deepEqual(count, easy.length, 'line count is different');

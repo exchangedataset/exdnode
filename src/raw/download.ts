@@ -49,7 +49,7 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
   const map: ExchangeShards = Object.fromEntries(entries.map(([exchange]) => [exchange, []]));
 
   const startMinute = convertNanosecToMinute(setting.start);
-  const endMinute = convertNanosecToMinute(setting.end);
+  const endMinute = convertNanosecToMinute(setting.end-BigInt(1));
 
   const excShards: Shard<string>[][] = [];
   for (const [exchange, channels] of entries) {
@@ -133,8 +133,7 @@ export default async function download(clientSetting: ClientSetting, setting: Ra
     let argmin: number = exchanges.length-1;
     const tmpLine = states[exchanges[argmin]].lastLine;
     let min: bigint = tmpLine.timestamp;
-    // must start from the end because it needs to remove its elements
-    for (let i = exchanges.length - 2; i >= 0; i--) {
+    for (let i = 0; i < exchanges.length - 2; i++) {
       const exchange = exchanges[i];
       const line = states[exchange].lastLine;
       if (line.timestamp < min) {

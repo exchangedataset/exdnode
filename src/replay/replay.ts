@@ -29,17 +29,18 @@ export type ReplayMessage = string | {
 
 export interface ReplayRequest {
   /**
-   * Send request and download response in an array.
-   * All data would be lost if there was an error while downloading
-   * any more than one part of request, including when your API-key quota runs out.
+   * Send requests and download responses in an array.
+   * 
+   * All data will be lost if there was an error while downloading
+   * any part of the request, including when your API-key quota runs out.
    */
   download(): Promise<Line<ReplayMessage>[]>;
   /**
-   * Send request to server and read response by streaming.
+   * Send requests to the server and read responses by streaming.
    *
-   * Returns Iterable object yields response line by line.
+   * Returns Iterable object yields a response line by line.
    * Can be iterated using for-async-of sentence.
-   * Iterator yields immidiately if a line is bufferred, waits for download if not avaliable.
+   * Iterator yields a line immidiately if it is bufferred, waits for it to be downloaded if not avaliable.
    *
    * **Please note that buffering won't start by calling this method,**
    * **calling {@link AsyncIterable.[Symbol.asyncIterator]} will.**
@@ -47,11 +48,11 @@ export interface ReplayRequest {
    * Higher responsiveness than {@link download} is expected as it does not have to wait for
    * the entire data to be downloaded.
    *
-   * @param bufferSize Desired buffer size to store streaming data.
-   * One shard is equavalent to one minute. Optional.
+   * @param bufferSize Optional. Desired buffer size to store streaming data.
+   * One shard is equavalent to one minute.
    * @returns Object implements `AsyncIterable` which yields response line by line from buffer.
    */
-  stream(): AsyncIterable<Line<ReplayMessage>>;
+  stream(bufferSize?: number): AsyncIterable<Line<ReplayMessage>>;
 }
 
 export function replay(clientParam: ClientParam, param: ReplayRequestParam): ReplayRequest {
