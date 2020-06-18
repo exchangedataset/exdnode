@@ -94,7 +94,7 @@
 					<div class="tsd-signature tsd-kind-icon">Line&lt;T&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>channel<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>exchange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">T</a><span class="tsd-signature-symbol">; </span>timestamp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_common_line_.linetype.html" class="tsd-signature-type">LineType</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:51</li>
+							<li>Defined in common/line.ts:52</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -136,7 +136,7 @@
 								<h5>exchange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>Exchange on which this line is recorded.</p>
+										<p>Name of exchange from which this line is recorded.</p>
 									</div>
 								</div>
 							</li>
@@ -158,10 +158,10 @@
 								<h5>timestamp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>Timestamp in nano seconds in unixtime-compatible format (unixtime * 10^9 + nanosec-part)
-											of this line was recorded.
-										Timezone is UTC.</p>
+										<p>Timestamp in nano seconds of this line was recorded.</p>
 									</div>
+									<p>Timestamp is in unixtime-compatible format (unixtime * 10^9 + nanosec-part).
+									Timezone is UTC.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
@@ -202,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">Shard&lt;T&gt;<span class="tsd-signature-symbol">:</span> <a href="_common_line_.html#line" class="tsd-signature-type">Line</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:107</li>
+							<li>Defined in common/line.ts:109</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -252,18 +252,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="_raw_raw_.html">&quot;raw/raw&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="_replay_builder_bitfinex_.html">&quot;replay/builder/bitfinex&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="_replay_builder_bitflyer_.html">&quot;replay/builder/bitflyer&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="_replay_builder_bitmex_.html">&quot;replay/builder/bitmex&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="_replay_builder_builder_.html">&quot;replay/builder/builder&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="_replay_common_.html">&quot;replay/common&quot;</a>

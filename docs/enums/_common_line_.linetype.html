@@ -74,8 +74,8 @@
 					<div class="lead">
 						<p>Enum of Line Type.</p>
 					</div>
-					<p>Line Type shows what type of a line it is, such as message line or start line.
-					Lines with different types contain different information and have to be treated differently.</p>
+					<p>Line Type shows what type of a line is, such as message line or start line.
+					Lines with different types contain different information and have to be treated accordingly.</p>
 					<dl class="tsd-comment-tags">
 						<dt>see</dt>
 						<dd><p>FilterLine</p>
@@ -108,7 +108,7 @@
 					<div class="tsd-signature tsd-kind-icon">END<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;end&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:33</li>
+							<li>Defined in common/line.ts:34</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -124,7 +124,7 @@
 					<div class="tsd-signature tsd-kind-icon">ERROR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;err&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:40</li>
+							<li>Defined in common/line.ts:41</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -132,7 +132,7 @@
 							<p>Error Line Type.</p>
 						</div>
 						<p>Used when error occurrs on recording.
-						Used in both server-side error and client-side error.</p>
+						Used in both server-side error and client-side (our client who receive WebSocket data) error.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -141,14 +141,15 @@
 					<div class="tsd-signature tsd-kind-icon">MESSAGE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;msg&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:15</li>
+							<li>Defined in common/line.ts:16</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Message Line Type.</p>
 						</div>
-						<p>This is the most usual Line Type.</p>
+						<p>Contains message sent from exchanges&#39; server.
+						This is the most usual Line Type.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -157,7 +158,7 @@
 					<div class="tsd-signature tsd-kind-icon">SEND<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;send&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:21</li>
+							<li>Defined in common/line.ts:22</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -173,7 +174,7 @@
 					<div class="tsd-signature tsd-kind-icon">START<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;start&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in common/line.ts:27</li>
+							<li>Defined in common/line.ts:28</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -217,18 +218,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/_raw_raw_.html">&quot;raw/raw&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_bitfinex_.html">&quot;replay/builder/bitfinex&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_bitflyer_.html">&quot;replay/builder/bitflyer&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_bitmex_.html">&quot;replay/builder/bitmex&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_builder_.html">&quot;replay/builder/builder&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/_replay_common_.html">&quot;replay/common&quot;</a>

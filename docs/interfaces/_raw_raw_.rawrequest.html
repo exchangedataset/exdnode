@@ -149,7 +149,7 @@
 									Can be iterated using for-async-of sentence.
 								Iterator yields immidiately if a line is bufferred, waits for download if not avaliable.</p>
 								<p><strong>Please note that buffering won&#39;t start by calling this method,</strong>
-								<strong>calling {@link AsyncIterable.[Symbol.asyncIterator]} will.</strong></p>
+								<strong>calling {@link AsyncIterator.next()} will.</strong></p>
 								<p>Higher responsiveness than <a href="_raw_raw_.rawrequest.html#download">download</a> is expected as it does not have to wait for
 								the entire data to be downloaded.</p>
 							</div>
@@ -158,13 +158,13 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> bufferSize: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Desired buffer size to store streaming data.
-										One shard is equavalent to one minute. Optional.</p>
+										<p>Optional. Desired buffer size to store streaming data.
+										One shard is equavalent to one minute.</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterable</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_common_line_.html#line" class="tsd-signature-type">Line</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>Object implements <code>AsyncIterable</code> which yields response line by line from buffer.</p>
+							<p>Object implements <code>AsyncIterable</code> from which iterator that yields response line by line from buffer can be obtained.</p>
 						</li>
 					</ul>
 				</section>
@@ -202,18 +202,6 @@
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/_raw_raw_.html">&quot;raw/raw&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_bitfinex_.html">&quot;replay/builder/bitfinex&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_bitflyer_.html">&quot;replay/builder/bitflyer&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_bitmex_.html">&quot;replay/builder/bitmex&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_replay_builder_builder_.html">&quot;replay/builder/builder&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/_replay_common_.html">&quot;replay/common&quot;</a>
