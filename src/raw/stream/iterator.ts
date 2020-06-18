@@ -56,9 +56,9 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
     }
 
     // return the line that has the smallest timestamp of all shards of each exchange
-    let argmin = this.exchanges.length - 1;
+    let argmin = 0;
     let min = this.states[this.exchanges[argmin]].lastLine.timestamp;
-    for (let i = 0; i < this.exchanges.length - 1; i++) {
+    for (let i = 1; i < this.exchanges.length; i++) {
       const lastLine = this.states[this.exchanges[i]].lastLine;
       if (lastLine.timestamp < min) {
         argmin = i;

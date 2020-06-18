@@ -7,7 +7,7 @@ import { RawRequest, RawRequestParam } from "./raw";
 import { Line } from "../common/line";
 import { Filter, checkParamFilter } from "../common/param";
 import { ClientSetting } from "../client/impl";
-import { convertDatetimeParam } from "../utils/datetime";
+import { convertAnyDateTime } from "../utils/datetime";
 import download from "./download";
 import RawStreamIterator from './stream/iterator';
 
@@ -25,8 +25,8 @@ export function setupRawRequestSetting(param: RawRequestParam): RawRequestSettin
   if (!('format' in param)) throw new Error('"format" was not specified');
   if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
 
-  const start = convertDatetimeParam(param.start);
-  let end = convertDatetimeParam(param.end);
+  const start = convertAnyDateTime(param.start);
+  let end = convertAnyDateTime(param.end);
   if (typeof param.end === 'number') {
     end += BigInt('60') * BigInt('1000000000');
   }

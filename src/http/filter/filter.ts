@@ -1,6 +1,6 @@
 import { ClientParam } from '../../client/client';
 import { setupClientSetting } from '../../client/impl';
-import { AnyDateInstance } from '../../utils/datetime';
+import { AnyDateTime, AnyMinute } from '../../utils/datetime';
 import { setupFilterRequestSetting, filterDownload } from './impl';
 import { Shard } from '../../common/line';
 
@@ -19,15 +19,15 @@ export type FilterParam = {
   /**
    * Start date-time.
    */
-  start: AnyDateInstance;
+  start: AnyDateTime;
   /**
    * End date-time.
    */
-  end: AnyDateInstance;
+  end: AnyDateTime;
   /**
-   * Minute in unixtime/60 to get a shard.
+   * Minute of the shard.
    */
-  minute: number;
+  minute: AnyMinute;
   /**
    * What format to get response in.
    */

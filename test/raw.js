@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { createClient } = require('../lib/index');
+const { convertAnyDateTime } = require('../lib/utils/datetime')
 const { APIKEY } = require('./constants');
 
 describe('RawRequest', function() {
@@ -8,12 +9,12 @@ describe('RawRequest', function() {
     filter: {
       bitmex: ['orderBookL2']
     },
-    start: 26297280,
-    end: 26297280,
+    start: '2020-01-01 00:00:00Z',
+    end: '2020-01-01 00:01:00Z',
     format: 'raw',
   });
-  const hardStart = (26297280n * 60n + 20n) * 1000000000n;
-  const hardEnd = (26297281n * 60n - 25n) * 1000000000n;
+  const hardStart = convertAnyDateTime('2020-01-01 00:00:25Z');
+  const hardEnd = convertAnyDateTime('2020-01-01 00:00:35Z');
   const hardReq = client.raw({
     filter: {
       bitflyer: ['lightning_board_FX_BTC_JPY'],
@@ -49,9 +50,8 @@ describe('RawRequest', function() {
   describe('stream', function() {
     it('normal', async function() {
       this.timeout(20000);
-      const stream = easyReq.stream();
       let count = 0;
-      for await (line of stream) {
+      for await (line of easyReq.stream()) {
         assert.deepEqual(line.timestamp, downloadParams[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadParams[count].timestamp}`);
         count += 1;
       }
@@ -59,9 +59,8 @@ describe('RawRequest', function() {
     });
     it('multiple exchanges', async function() {
       this.timeout(20000);
-      const stream = hardReq.stream();
       let count = 0;
-      for await (line of stream) {
+      for await (line of hardReq.stream()) {
         assert.deepEqual(line.timestamp, downloadTruncate[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadTruncate[count].timestamp}`);
         count += 1;
       }

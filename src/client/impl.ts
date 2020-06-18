@@ -10,8 +10,8 @@ import { HTTPModule } from '../http/http';
 import { HTTPModuleImpl } from '../http/impl';
 import { RawRequestParam, RawRequest } from '../raw/raw';
 import { RawRequestImpl, setupRawRequestSetting } from '../raw/impl';
-import { ReplayRequestBuilder } from '../replay/builder/builder';
-import { ReplayRequestBuilderImpl } from '../replay/builder/impl';
+import { ReplayRequest, ReplayRequestParam } from '../replay/replay';
+import { ReplayRequestImpl, setupReplayRequestSetting } from '../replay/impl';
 
 export type ClientSetting = {
   apikey: string;
@@ -44,7 +44,7 @@ export class ClientImpl implements Client {
   raw(param: RawRequestParam): RawRequest {
     return new RawRequestImpl(this.setting, setupRawRequestSetting(param));
   }
-  replay(): ReplayRequestBuilder {
-    return new ReplayRequestBuilderImpl(this.setting);
+  replay(param: ReplayRequestParam): ReplayRequest {
+    return new ReplayRequestImpl(this.setting, setupReplayRequestSetting(param));
   }
 }

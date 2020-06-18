@@ -6,7 +6,7 @@
 import readline from 'readline';
 import { ClientSetting } from "../../client/impl";
 import { SnapshotParam, Snapshot } from "./snapshot";
-import { convertDatetimeParam } from "../../utils/datetime";
+import { convertAnyDateTime } from "../../utils/datetime";
 import { getResponse } from "../../common/download";
 
 export type SnapshotSetting = {
@@ -32,7 +32,7 @@ export function setupSnapshotRequestSetting(param: SnapshotParam): SnapshotSetti
   return {
     exchange: param.exchange,
     channels: topics,
-    at: convertDatetimeParam(param.at),
+    at: convertAnyDateTime(param.at),
     format: param.format,
   }
 }

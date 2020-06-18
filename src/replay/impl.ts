@@ -8,7 +8,7 @@ import { ReplayRequest, ReplayRequestParam, ReplayMessage } from "./replay";
 import { Line } from "../common/line";
 import { Filter, checkParamFilter } from "../common/param";
 import { ClientSetting } from "../client/impl";
-import { convertDatetimeParam } from "../utils/datetime";
+import { convertAnyDateTime } from "../utils/datetime";
 import { RawRequestImpl, setupRawRequestSetting } from "../raw/impl";
 import RawLineProcessor from "./common";
 import { ReplayStreamIterator } from "./stream";
@@ -46,8 +46,8 @@ export function setupReplayRequestSetting(param: ReplayRequestParam): ReplayRequ
   if (!('end' in param)) throw new Error('"end" date time was not specified');
   checkParamFilter(param);
 
-  const start = convertDatetimeParam(param.start);
-  let end = convertDatetimeParam(param.end);
+  const start = convertAnyDateTime(param.start);
+  let end = convertAnyDateTime(param.end);
   if (typeof param.end === 'number') {
     end += BigInt('60') * BigInt('1000000000');
   }

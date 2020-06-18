@@ -1,4 +1,4 @@
-import { AnyDateInstance } from "../../utils/datetime";
+import { AnyDateTime } from "../../utils/datetime";
 import { ClientParam } from "../../client/client";
 import { setupClientSetting } from "../../client/impl";
 import { setupSnapshotRequestSetting, snapshotDownload } from "./impl";
@@ -18,7 +18,7 @@ export type SnapshotParam = {
   /**
    * Date-time to take snapshot at.
    */
-  at: AnyDateInstance;
+  at: AnyDateTime;
   /**
    * What format to get response in.
    */

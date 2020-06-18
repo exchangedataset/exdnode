@@ -6,7 +6,7 @@
 import readline from 'readline';
 import { Line, Shard, LineType } from "../../common/line";
 import { FilterParam } from "./filter";
-import { convertDatetimeParam } from "../../utils/datetime";
+import { convertAnyDateTime, convertAnyMinute } from "../../utils/datetime";
 import { ClientSetting } from "../../client/impl";
 import { getResponse } from "../../common/download";
 
@@ -30,13 +30,12 @@ export function setupFilterRequestSetting(param: FilterParam): FilterSetting {
     if (typeof ch !== 'string') throw new Error('element of "channels" must be of string type');
   }
   if (!('minute' in param)) throw new Error('"minute" was not specified');
-  if (typeof param.minute !== 'number') throw new Error('"minute" must be of number type');
-  if (!Number.isInteger(param.minute)) throw new Error('"minute" must be of integer');
+  const minute = convertAnyMinute(param.minute);
   if (!('format' in param)) throw new Error('"format" was not specified');
   if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
 
-  const start = convertDatetimeParam(param.start);
-  let end = convertDatetimeParam(param.end);
+  const start = convertAnyDateTime(param.start);
+  let end = convertAnyDateTime(param.end);
   if (typeof param.end === 'number') {
     // if end is in minute, that means end + 60 seconds (exclusive)
     // adding 60 seconds
@@ -56,7 +55,7 @@ export function setupFilterRequestSetting(param: FilterParam): FilterSetting {
     channels,
     start,
     end,
-    minute: param.minute,
+    minute,
     format: param.format,
   };
 }

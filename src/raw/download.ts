@@ -130,10 +130,10 @@ export default async function download(clientSetting: ClientSetting, setting: Ra
   const array: Line<string>[] = []
   while (exchanges.length > 0) {
     // have to set initial value to calculate minimun value
-    let argmin: number = exchanges.length-1;
+    let argmin = 0;
     const tmpLine = states[exchanges[argmin]].lastLine;
-    let min: bigint = tmpLine.timestamp;
-    for (let i = 0; i < exchanges.length - 2; i++) {
+    let min = tmpLine.timestamp;
+    for (let i = 1; i < exchanges.length; i++) {
       const exchange = exchanges[i];
       const line = states[exchange].lastLine;
       if (line.timestamp < min) {

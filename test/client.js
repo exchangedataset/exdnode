@@ -32,12 +32,19 @@ describe('Client', function() {
     });
   });
   describe('replay', function() {
-    it('creates replay builder', function() {
+    it('creates replay request', function() {
       let builder;
       assert.doesNotThrow(function () {
-        builder = exds.createClient({ apikey: APIKEY }).replay();
+        builder = exds.createClient({ apikey: APIKEY }).replay({
+          filter: {
+            bitmex: ['orderBookL2'],
+          },
+          start: 0,
+          end: 0,
+          format: 'raw',
+        });
       });
-      assert.ok('build' in builder, 'unexpected object');
+      assert.ok('download' in builder, 'unexpected object');
     });
   });
 });

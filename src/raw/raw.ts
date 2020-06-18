@@ -1,6 +1,6 @@
 import { Line } from "../common/line";
 import { Filter } from "../common/param";
-import { AnyDateInstance } from "../utils/datetime";
+import { AnyDateTime } from "../utils/datetime";
 import { ClientParam } from "../client/client";
 import { setupClientSetting} from "../client/impl";
 import { RawRequestImpl, setupRawRequestSetting as setupRawRequestSetting } from "./impl";
@@ -16,11 +16,11 @@ export type RawRequestParam = {
   /**
    * Start date-time.
    */
-  start: AnyDateInstance;
+  start: AnyDateTime;
   /**
    * End date-time.
    */
-  end: AnyDateInstance;
+  end: AnyDateTime;
   /**
    * What format to receive response with.
    * If you specify raw, then you will get result in raw format that the exchanges are providing with.

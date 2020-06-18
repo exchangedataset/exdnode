@@ -1,5 +1,5 @@
 import { Filter } from '../common/param';
-import { AnyDateInstance } from '../utils/datetime';
+import { AnyDateTime } from '../utils/datetime';
 import { Line } from '../common/line';
 import { ClientParam } from '../client/client';
 import { setupClientSetting } from '../client/impl';
@@ -16,11 +16,11 @@ export type ReplayRequestParam = {
   /**
    * Start date-time.
    */
-  start: AnyDateInstance;
+  start: AnyDateTime;
   /**
    * End date-time.
    */
-  end: AnyDateInstance;
+  end: AnyDateTime;
 }
 
 export type ReplayMessage = string | {
@@ -58,5 +58,3 @@ export interface ReplayRequest {
 export function replay(clientParam: ClientParam, param: ReplayRequestParam): ReplayRequest {
   return new ReplayRequestImpl(setupClientSetting(clientParam), setupReplayRequestSetting(param));
 }
-
-export * from './builder/builder';

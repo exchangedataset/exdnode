@@ -4,14 +4,13 @@ const { APIKEY } = require('./constants');
 
 describe('Replay', function() {
   const client = createClient({ apikey: APIKEY });
-  const easyReq = client.replay()
-    .bitmex(
-      replay.bitmex()
-        .orderBookL2(["XBTUSD"])
-        .build()
-    )
-    .range(26297280)
-    .build();
+  const easyReq = client.replay({
+    filter: {
+      bitmex: ['orderBookL2_XBTUSD']
+    },
+    start: '2020-01-01 00:00:00Z',
+    end: '2020-01-01 00:01:00Z',
+  });
   let easy;
 
   it('download', async function() {
@@ -27,7 +26,6 @@ describe('Replay', function() {
       assert.deepEqual(easy[count].message, line.message, 'line is different');
       assert.deepStrictEqual(typeof line.channel, "string", "expected string as channel:"+line.channel)
       assert.ok(typeof line.message === "object" || typeof line.message === "string", "expected string or object as a message:"+JSON.stringify(line.message))
-      console.log(line)
       count++;
     }
     assert.deepEqual(count, easy.length, 'line count is different');

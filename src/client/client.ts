@@ -1,7 +1,7 @@
 import { ClientImpl, setupClientSetting } from './impl';
 import { HTTPModule } from '../http/http';
 import { RawRequest, RawRequestParam } from '../raw/raw';
-import { ReplayRequestBuilder } from '../replay/replay';
+import { ReplayRequest, ReplayRequestParam } from '../replay/replay';
 
 /**
  * Config for making new client.
@@ -33,7 +33,7 @@ export interface Client {
   /**
    * Returns builder to create {@link ReplayRequest} that replays market data.
    */
-  replay(): ReplayRequestBuilder;
+  replay(param: ReplayRequestParam): ReplayRequest;
 }
 
 /**

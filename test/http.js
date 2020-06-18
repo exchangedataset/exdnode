@@ -31,24 +31,24 @@ describe('http', function() {
       client.http.filter({
         exchange: 'bitmex',
         channels: ['orderBookL2'],
-        start: 26375331,
+        start: '2020-01-01 00:00:00Z',
       }).catch(() => done());
     });
     it('provide exchange, channel, start, end', function(done) {
       client.http.filter({
         exchange: 'bitmex',
         channels: ['orderBookL2'],
-        start: 26375331,
-        end: 26375331,
+        start: '2020-01-01 00:00:00Z',
+        end: '2020-01-01 00:01:00Z',
       }).catch(() => done());
     });
     it('provide exchange, channel, start, end, minute', function(done) {
       client.http.filter({
         exchange: 'bitmex',
         channels: ['orderBookL2'],
-        start: 26375331,
-        end: 26375331,
-        minute: 26375331,
+        start: '2020-01-01 00:00:00Z',
+        end: '2020-01-01 00:01:00Z',
+        minute: '2020-01-01 00:00Z',
       }).catch(() => done());
     });
     it('provide all', function(done) {
@@ -57,9 +57,9 @@ describe('http', function() {
       client.http.filter({
         exchange: 'bitmex',
         channels: ['orderBookL2'],
-        start: 26430647,
-        end: 26430647,
-        minute: 26430647,
+        start: '2020-01-01 00:00:00Z',
+        end: '2020-01-01 00:01:00Z',
+        minute: '2020-01-01 00:00Z',
         format: 'raw',
       }).then(() => done()).catch(done);
     });
@@ -72,7 +72,7 @@ describe('http', function() {
       client.http.snapshot({
         exchange: 'bitmex',
         channels: ['orderBookL2'],
-        at: 26430647,
+        at: '2020-01-01 00:00:00Z',
         format: 'raw',
       }).then(() => done()).catch(done);
     });
