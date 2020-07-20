@@ -48,13 +48,6 @@ export type Snapshot = {
  * @param clientParam Client parameter
  * @param param Snapshot parameter
  */
-export interface SnapshotRequest {
-  /**
-   * Send request to server.
-   */
-  download(): Promise<Snapshot[]>;
-}
-
 export async function snapshot(clientParam: ClientParam, param: SnapshotParam): Promise<Snapshot[]> {
   if (typeof clientParam === 'undefined') throw new Error("'clientParam' must be specified")
   if (typeof param === 'undefined') throw new Error("'param' must be specified")
