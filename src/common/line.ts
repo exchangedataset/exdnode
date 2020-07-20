@@ -10,26 +10,26 @@ export enum LineType {
   /**
    * Message Line Type.
    * 
-   * Contains message sent from exchanges' server.
-   * This is the most usual Line Type.
+	* Message of a line of this type contains message sent from exchanges' server.
+	 * This is the most usual LineType.
    */
   MESSAGE = 'msg',
   /**
    * Send Line Type.
    * 
-   * Message send from one of our client when recording.
+   * Message of a line of this type contains message sent from one of our client when recording.
    */
   SEND = 'send',
   /**
    * Start Line Type.
    * 
-   * Indicates the first line in the continuous recording.
+   * Line of this type indicates the first line in the continuous recording.
    */
   START = 'start',
   /**
    * End Line Type.
    * 
-   * Indicates the end line in the continuous recording.
+   * Line of this type indicates the end line in the continuous recording.
    */
   END = 'end',
   /**

@@ -44,7 +44,9 @@ export type Snapshot = {
 }
 
 /**
- * Request to snapshot HTTP-API endpoint.
+ * Returns `Promise` of {@link Snapshot}s for given client and snapshot parameter.
+ * @param clientParam Client parameter
+ * @param param Snapshot parameter
  */
 export interface SnapshotRequest {
   /**

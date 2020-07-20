@@ -18,7 +18,7 @@ export type ClientParam = {
 }
 
 /**
- * Client eliminates the neccesity of providing {@link ClientParam} for every API call.
+ * User can interact with API using a client
  */
 export interface Client {
   /**

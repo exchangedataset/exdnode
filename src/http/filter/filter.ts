@@ -5,7 +5,7 @@ import { setupFilterRequestSetting, filterDownload } from './impl';
 import { Shard } from '../../common/line';
 
 /**
- * Parameters to make new {@link FilterRequest}.
+ * Parameters to make new request to Filter HTTP Endpoint.
  */
 export type FilterParam = {
   /**
@@ -35,7 +35,7 @@ export type FilterParam = {
 }
 
 /**
- * Returns `Promise` of {@link FilterRequest} for given client and filter parameter.
+ * Returns `Promise` of {@link Shard}s for given client and filter parameter.
  * @param clientParam Client parameter
  * @param param Filter parameter
  */

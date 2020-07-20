@@ -160,7 +160,7 @@ export async function filterDownload(clientSetting: ClientSetting, setting: Filt
   // process stream to get lines
   let lines: Line<string>[] = [];
   if (res.statusCode === 200) {
-    /* read lines from the response stream */
+    // read lines from the response stream
     lines = await readLines(setting.exchange, res.stream);
   }
   res.stream.destroy();

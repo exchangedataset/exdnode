@@ -62,6 +62,11 @@ export interface RawRequest {
   stream(bufferSize?: number): AsyncIterable<Line<string>>;
 }
 
+/**
+ * Creates new `RawRequest` with the given parameters.
+ * @param clientParam Client parameter
+ * @param param Request parameter
+ */
 export function raw(clientParam: ClientParam, param: RawRequestParam): RawRequest {
   return new RawRequestImpl(setupClientSetting(clientParam), setupRawRequestSetting(param));
 }
