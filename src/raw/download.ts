@@ -5,9 +5,8 @@
 
 import { Line, Shard } from "../common/line";
 import { ClientSetting } from "../client/impl";
-import { RawRequestSetting } from "./impl";
-import { setupFilterRequestSetting as setupFilterRequestSetting, filterDownload} from "../http/filter/impl";
-import { setupSnapshotRequestSetting, snapshotDownload } from "../http/snapshot/impl";
+import { setupFilterSetting, _filter} from "../http/filter/impl";
+import { setupSnapshotSetting, _snapshot } from "../http/snapshot/impl";
 import { convertSnapshotToLine } from "./common";
 import { convertNanosecToMinute } from "../utils/datetime";
 import { DOWNLOAD_BATCH_SIZE } from "../constants";
@@ -57,7 +56,7 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
 
     let batch: Promise<Shard<string>>[] = [];
     batch.push(
-      snapshotDownload(clientSetting, setupSnapshotRequestSetting({
+      _snapshot(clientSetting, setupSnapshotSetting({
         exchange,
         channels,
         at: setting.start,
@@ -70,7 +69,7 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
     let i = 1;
     for (let minute = startMinute; minute <= endMinute; minute++) {
       batch.push(
-        filterDownload(clientSetting, setupFilterRequestSetting({
+        _filter(clientSetting, setupFilterSetting({
           exchange,
           channels,
           start: setting.start,

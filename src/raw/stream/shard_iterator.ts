@@ -7,8 +7,8 @@ import { ClientSetting } from "../../client/impl";
 import { DEFAULT_BUFFER_SIZE } from "../../constants";
 import { convertNanosecToMinute } from "../../utils/datetime";
 import { Shard } from "../../common/line";
-import { filterDownload, setupFilterRequestSetting } from "../../http/filter/impl";
-import { snapshotDownload, setupSnapshotRequestSetting } from "../../http/snapshot/impl";
+import { _filter, setupFilterSetting } from "../../http/filter/impl";
+import { _snapshot, setupSnapshotSetting } from "../../http/snapshot/impl";
 import { convertSnapshotToLine } from "../common";
 
 type ShardSlot = { shard?: Shard<string> };
@@ -47,9 +47,9 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     if (isFirstShard) {
       // if this shard is the first shard to be downloaded, then
       // it must download snapshot first
-      download = snapshotDownload(
+      download = _snapshot(
         this.clientSetting,
-        setupSnapshotRequestSetting({
+        setupSnapshotSetting({
           exchange: this.exchange,
           channels: this.channels,
           at: this.start,
@@ -57,9 +57,9 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
         })
       ).then((sss) => sss.map((ss) => convertSnapshotToLine(this.exchange, ss)))
     } else {
-      download = filterDownload(
+      download = _filter(
         this.clientSetting,
-        setupFilterRequestSetting({
+        setupFilterSetting({
           exchange: this.exchange,
           channels: this.channels,
           start: this.start,

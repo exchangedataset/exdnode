@@ -1,7 +1,7 @@
 import { AnyDateTime } from "../../utils/datetime";
 import { ClientParam } from "../../client/client";
 import { setupClientSetting } from "../../client/impl";
-import { setupSnapshotRequestSetting, snapshotDownload } from "./impl";
+import { setupSnapshotSetting, _snapshot } from "./impl";
 
 /**
  * Parameters to make new {@link SnapshotRequest}.
@@ -58,5 +58,5 @@ export interface SnapshotRequest {
 export async function snapshot(clientParam: ClientParam, param: SnapshotParam): Promise<Snapshot[]> {
   if (typeof clientParam === 'undefined') throw new Error("'clientParam' must be specified")
   if (typeof param === 'undefined') throw new Error("'param' must be specified")
-  return await snapshotDownload(setupClientSetting(clientParam), setupSnapshotRequestSetting(param));
+  return await _snapshot(setupClientSetting(clientParam), setupSnapshotSetting(param));
 }

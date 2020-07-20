@@ -16,7 +16,7 @@ export type SnapshotSetting = {
   format: string;
 }
 
-export function setupSnapshotRequestSetting(param: SnapshotParam): SnapshotSetting {
+export function setupSnapshotSetting(param: SnapshotParam): SnapshotSetting {
   if (!('at' in param)) throw new Error('"at" date time was not specified');
 
   if (!('exchange' in param)) throw new Error('"exchange" was not specified');
@@ -59,7 +59,7 @@ async function readResponse(stream: NodeJS.ReadableStream): Promise<Snapshot[]> 
   });
 }
 
-export async function snapshotDownload(clientSetting: ClientSetting, setting: SnapshotSetting): Promise<Snapshot[]>  {
+export async function _snapshot(clientSetting: ClientSetting, setting: SnapshotSetting): Promise<Snapshot[]>  {
   const res = await getResponse(
     clientSetting,
     `snapshot/${setting.exchange}/${setting.at}`,

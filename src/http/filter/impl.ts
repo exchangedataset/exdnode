@@ -19,7 +19,7 @@ export type FilterSetting = {
   format: string;
 }
 
-export function setupFilterRequestSetting(param: FilterParam): FilterSetting {
+export function setupFilterSetting(param: FilterParam): FilterSetting {
   if (!('start' in param)) throw new Error('"start" date time was not specified');
   if (!('end' in param)) throw new Error('"end" date time was not specified');
   // type check for those parameter will be done in convertDatetimeParam function
@@ -144,7 +144,7 @@ async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promi
   });
 }
 
-export async function filterDownload(clientSetting: ClientSetting, setting: FilterSetting): Promise<Shard<string>> {
+export async function _filter(clientSetting: ClientSetting, setting: FilterSetting): Promise<Shard<string>> {
   // request and download
   const res = await getResponse(
     clientSetting,

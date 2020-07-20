@@ -1,7 +1,7 @@
 import { ClientParam } from '../../client/client';
 import { setupClientSetting } from '../../client/impl';
 import { AnyDateTime, AnyMinute } from '../../utils/datetime';
-import { setupFilterRequestSetting, filterDownload } from './impl';
+import { setupFilterSetting, _filter } from './impl';
 import { Shard } from '../../common/line';
 
 /**
@@ -42,5 +42,5 @@ export type FilterParam = {
 export async function filter(clientParam: ClientParam, param: FilterParam): Promise<Shard<string>> {
   if (typeof clientParam === 'undefined') throw new Error("'clientParam' must be specified")
   if (typeof param === 'undefined') throw new Error("'param' must be specified")
-  return await filterDownload(setupClientSetting(clientParam), setupFilterRequestSetting(param))
+  return await _filter(setupClientSetting(clientParam), setupFilterSetting(param))
 }
