@@ -3,7 +3,7 @@ import { Filter } from "../common/param";
 import { AnyDateTime } from "../utils/datetime";
 import { ClientParam } from "../client/client";
 import { setupClientSetting} from "../client/impl";
-import { RawRequestImpl, setupRawRequestSetting as setupRawRequestSetting } from "./impl";
+import { RawRequestImpl, setupRawRequestSetting } from "./impl";
 
 /**
  * Parameters to make new {@link RawRequest}.

@@ -7,7 +7,7 @@ import { ClientSetting } from "../../client/impl";
 import { DEFAULT_BUFFER_SIZE } from "../../constants";
 import { convertNanosecToMinute } from "../../utils/datetime";
 import { Shard } from "../../common/line";
-import { _filter, setupFilterSetting } from "../../http/filter/impl";
+import { _filter } from "../../http/filter/impl";
 import { _snapshot, setupSnapshotSetting } from "../../http/snapshot/impl";
 import { convertSnapshotToLine } from "../common";
 
@@ -59,14 +59,14 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     } else {
       download = _filter(
         this.clientSetting,
-        setupFilterSetting({
+        {
           exchange: this.exchange,
           channels: this.channels,
           start: this.start,
           end: this.end,
           minute: this.nextDownloadMinute,
           format: this.format,
-        })
+        }
       );
       this.nextDownloadMinute += 1;
     }

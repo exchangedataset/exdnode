@@ -9,7 +9,7 @@ import { Line } from "../common/line";
 import { Filter, checkParamFilter } from "../common/param";
 import { ClientSetting } from "../client/impl";
 import { convertAnyDateTime } from "../utils/datetime";
-import { RawRequestImpl, setupRawRequestSetting } from "../raw/impl";
+import { RawRequestImpl } from "../raw/impl";
 import RawLineProcessor from "./common";
 import { ReplayStreamIterator } from "./stream";
 
@@ -18,29 +18,6 @@ export type ReplayRequestSetting = {
   start: bigint;
   end: bigint;
 }
-
-export function convertReplayFilterToRawFilter(param: Filter): Filter {
-  const filter: Filter = {};
-  for (const [exchange, channels] of Object.entries(param)) {
-    if (exchange === "bitmex") {
-      const set = new Set<string>();
-      for (const channel of channels) {
-        if (channel.startsWith("orderBookL2")) {
-          set.add("orderBookL2");
-        } else if (channel.startsWith("trade")) {
-          set.add("trade");
-        } else {
-          set.add(channel);
-        }
-      }
-      filter[exchange] = Array.from(set);
-    } else {
-      filter[exchange] = channels
-    }
-  }
-  return filter;
-}
-
 export function setupReplayRequestSetting(param: ReplayRequestParam): ReplayRequestSetting {
   if (!('start' in param)) throw new Error('"start" date time was not specified');
   if (!('end' in param)) throw new Error('"end" date time was not specified');
@@ -65,16 +42,38 @@ export function setupReplayRequestSetting(param: ReplayRequestParam): ReplayRequ
   };
 }
 
+export function convertReplayFilterToRawFilter(param: Filter): Filter {
+  const filter: Filter = {};
+  for (const [exchange, channels] of Object.entries(param)) {
+    if (exchange === "bitmex") {
+      const set = new Set<string>();
+      for (const channel of channels) {
+        if (channel.startsWith("orderBookL2")) {
+          set.add("orderBookL2");
+        } else if (channel.startsWith("trade")) {
+          set.add("trade");
+        } else {
+          set.add(channel);
+        }
+      }
+      filter[exchange] = Array.from(set);
+    } else {
+      filter[exchange] = channels
+    }
+  }
+  return filter;
+}
+
 export class ReplayRequestImpl implements ReplayRequest {
   constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting) {}
 
   async download(): Promise<Line<ReplayMessage>[]> {
-    const req = new RawRequestImpl(this.clientSetting, setupRawRequestSetting({
+    const req = new RawRequestImpl(this.clientSetting, {
       filter: convertReplayFilterToRawFilter(this.setting.filter),
       start: this.setting.start,
       end: this.setting.end,
       format: "json",
-    }));
+    });
 
     const postFilter: { [key: string]: Set<string> } = {};
     for (const [exchange, channels] of Object.entries(this.setting.filter)) {

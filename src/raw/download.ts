@@ -5,11 +5,12 @@
 
 import { Line, Shard } from "../common/line";
 import { ClientSetting } from "../client/impl";
-import { setupFilterSetting, _filter} from "../http/filter/impl";
+import { _filter} from "../http/filter/impl";
 import { setupSnapshotSetting, _snapshot } from "../http/snapshot/impl";
 import { convertSnapshotToLine } from "./common";
 import { convertNanosecToMinute } from "../utils/datetime";
 import { DOWNLOAD_BATCH_SIZE } from "../constants";
+import { RawRequestSetting } from "./impl";
 
 class ShardsLineIterator implements Iterator<Line<string>> {
   private position = 0;
@@ -69,14 +70,14 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
     let i = 1;
     for (let minute = startMinute; minute <= endMinute; minute++) {
       batch.push(
-        _filter(clientSetting, setupFilterSetting({
+        _filter(clientSetting, {
           exchange,
           channels,
           start: setting.start,
           end: setting.end,
           minute,
           format: setting.format,
-        }))
+        })
       );
       i++;
       if (i >= DOWNLOAD_BATCH_SIZE) {
