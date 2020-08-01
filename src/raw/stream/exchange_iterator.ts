@@ -30,9 +30,8 @@ export default class ExchangeStreamIterator implements AsyncIterator<Line<string
     if (this.itrNext === null) {
       // get very first shard
       this.itrNext = await this.shardIterator.next();
-      // there must be at least one shard
     }
-    // skip shards which is read until the end, including empty ones as long as available
+    // skip shards does not have any more lines (or empty) as long as available
     while (!this.itrNext.done && this.itrNext.value.length <= this.position) {
       this.itrNext = await this.shardIterator.next();
       // set position back to zero for the new shard

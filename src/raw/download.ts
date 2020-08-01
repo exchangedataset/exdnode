@@ -125,7 +125,7 @@ export default async function download(clientSetting: ClientSetting, setting: Ra
     }
   }
 
-  /* it needs to process lines so that it becomes a single array */
+  // Process shards into single array
   // array to store the result
   const array: Line<string>[] = []
   while (exchanges.length > 0) {

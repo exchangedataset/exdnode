@@ -36,7 +36,7 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
         );
         const next = await iterator.next();
 
-        // skip if exchange iterator returns no lines at all (empty)
+        // skip if an exchange iterator returns no line
         if (next.done) {
           continue;
         }
@@ -55,7 +55,7 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
       }
     }
 
-    // return the line that has the smallest timestamp of all shards of each exchange
+    // return the line that has the smallest timestamp across exchanges
     let argmin = 0;
     let min = this.states[this.exchanges[argmin]].lastLine.timestamp;
     for (let i = 1; i < this.exchanges.length; i++) {
@@ -66,12 +66,12 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
       }
     }
 
-    // prepare the next line for this shard
+    // get the next line for this exchange
     const state = this.states[this.exchanges[argmin]];
     const line = state.lastLine;
     const next = await state.iterator.next()
     if (next.done) {
-      // it does not have next line, remove this exchange from list
+      // There is no next line, remove exchange from the list
       this.exchanges.splice(argmin, 1);
     }
     state.lastLine = next.value;

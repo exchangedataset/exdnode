@@ -43,7 +43,7 @@ export interface RawRequest {
    */
   download(): Promise<Line<string>[]>;
   /**
-   * Send request to server and read response by streaming.
+   * Send requests to the server and read response by streaming.
    *
    * Returns Iterable object yields response line by line.
    * Can be iterated using for-async-of sentence.
