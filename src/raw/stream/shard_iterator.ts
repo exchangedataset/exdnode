@@ -18,7 +18,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
   // fill buffer with null value (means not downloaded)
   private buffer: ShardSlot[] = [];
   private notifier: Notifier | null = null;
-  private nextDownloadMinute: number;
+  private nextMinute: number;
   private endMinute: number;
   private error: Error | null = null;
 
@@ -31,11 +31,11 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     private format: string,
     bufferSize: number = DEFAULT_BUFFER_SIZE,
   ) {
-    this.nextDownloadMinute = convertNanosecToMinute(start);
+    this.nextMinute = convertNanosecToMinute(start);
     // end is exclusive
     this.endMinute = convertNanosecToMinute(end - BigInt(1));
     // start downloading shards to fill buffer
-    for (let i = 0; i < bufferSize && this.nextDownloadMinute <= this.endMinute; i += 1) this.downloadNewShard();
+    for (let i = 0; i < bufferSize && this.nextMinute <= this.endMinute; i += 1) this.downloadNewShard();
   }
 
   private downloadNewShard(): void {
@@ -64,11 +64,11 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
           channels: this.channels,
           start: this.start,
           end: this.end,
-          minute: this.nextDownloadMinute,
+          minute: this.nextMinute,
           format: this.format,
         }
       );
-      this.nextDownloadMinute += 1;
+      this.nextMinute += 1;
     }
     download.then((shard) => {
       // once downloaded, set instance of shard
@@ -115,7 +115,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
             }
             const { shard } = this.buffer[0];
             this.buffer.shift();
-            if (this.nextDownloadMinute <= this.endMinute) this.downloadNewShard();
+            if (this.nextMinute <= this.endMinute) this.downloadNewShard();
             resolve({
               done: false,
               value: shard,
@@ -126,7 +126,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
         } else {
           const { shard } = this.buffer[0];
           this.buffer.shift();
-          if (this.nextDownloadMinute <= this.endMinute) this.downloadNewShard();
+          if (this.nextMinute <= this.endMinute) this.downloadNewShard();
           resolve({
             done: false,
             value: shard,
@@ -137,7 +137,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     // shard is bufferred, return it
     const { shard } = this.buffer[0];
     this.buffer.shift();
-    if (this.nextDownloadMinute <= this.endMinute) this.downloadNewShard();
+    if (this.nextMinute <= this.endMinute) this.downloadNewShard();
     return Promise.resolve({
       done: false,
       value: shard,
