@@ -26,6 +26,7 @@ export function setupFilterSetting(param: FilterParam): FilterSetting {
 
   if (!('exchange' in param)) throw new Error('"exchange" was not specified');
   if (!('channels' in param)) throw new Error('"channels" was not specified');
+  if (!Array.isArray(param.channels)) throw new TypeError('"channels" must be an array of string');
   for (const ch of param.channels) {
     if (typeof ch !== 'string') throw new Error('element of "channels" must be of string type');
   }
