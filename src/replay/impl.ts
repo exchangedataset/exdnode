@@ -42,9 +42,9 @@ export function setupReplayRequestSetting(param: ReplayRequestParam): ReplayRequ
   };
 }
 
-export function convertReplayFilterToRawFilter(param: Filter): Filter {
-  const filter: Filter = {};
-  for (const [exchange, channels] of Object.entries(param)) {
+export function convertReplayFilterToRawFilter(filter: Filter): Filter {
+  const newFilter: Filter = {};
+  for (const [exchange, channels] of Object.entries(filter)) {
     if (exchange === "bitmex") {
       const set = new Set<string>();
       for (const channel of channels) {
@@ -56,12 +56,12 @@ export function convertReplayFilterToRawFilter(param: Filter): Filter {
           set.add(channel);
         }
       }
-      filter[exchange] = Array.from(set);
+      newFilter[exchange] = Array.from(set);
     } else {
-      filter[exchange] = channels
+      newFilter[exchange] = channels
     }
   }
-  return filter;
+  return newFilter;
 }
 
 export class ReplayRequestImpl implements ReplayRequest {
@@ -75,25 +75,15 @@ export class ReplayRequestImpl implements ReplayRequest {
       format: "json",
     });
 
-    const postFilter: { [key: string]: Set<string> } = {};
-    for (const [exchange, channels] of Object.entries(this.setting.filter)) {
-      postFilter[exchange] = new Set();
-      for (const channel of channels) {
-        postFilter[exchange].add(channel);
-      }
-    }
 
     const array = await req.download();
     const result = Array(array.length)
-    const processor = new RawLineProcessor();
+    const processor = new RawLineProcessor(this.setting.filter);
     
     let j = 0;
     for (let i = 0; i < array.length; i++) {
       const processed = processor.processRawLines(array[i]);
       if (processed === null) {
-        continue;
-      }
-      if (!postFilter[processed.exchange!].has(processed.channel!)) {
         continue;
       }
       result[j] = processed;

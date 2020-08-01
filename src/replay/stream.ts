@@ -10,7 +10,6 @@ import RawLineProcessor from "./common";
 export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> {
   private rawItr: AsyncIterator<Line<string>>;
   private processor: RawLineProcessor;
-  private postFilter: { [key: string]: Set<string> } = {};
 
   constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting, bufferSize?: number) {
     const req = new RawRequestImpl(this.clientSetting, {
@@ -20,14 +19,7 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
       format: "json",
     });
     this.rawItr = req.stream(bufferSize)[Symbol.asyncIterator]();
-    // it needs to post filter
-    for (const [exchange, channels] of Object.entries(setting.filter)) {
-      this.postFilter[exchange] = new Set();
-      for (const channel of channels) {
-        this.postFilter[exchange].add(channel);
-      }
-    }
-    this.processor = new RawLineProcessor();
+    this.processor = new RawLineProcessor(this.setting.filter);
   }
   
   async next(): Promise<IteratorResult<Line<ReplayMessage>>> {
@@ -47,12 +39,10 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
         continue;
       }
 
-      if (this.postFilter[processed.exchange].has(processed.channel!)) {
-        return {
-          done: false,
-          value: processed,
-        };
-      }
+      return {
+        done: false,
+        value: processed,
+      };
     }
   }
 }
