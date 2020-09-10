@@ -46,7 +46,7 @@ export default class RawLineProcessor {
     if (line.exchange === "bitmex") {
       if (channel.indexOf("_") === -1) {
         // no underscore in the channel name
-        newChannel = `${channel}_${msgObj["pair"]}`;
+        newChannel = `${channel}_${msgObj["symbol"]}`;
       }
       // an underscore in the channel name is an unexpected case
     }

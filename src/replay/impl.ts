@@ -48,17 +48,17 @@ export function convertReplayFilterToRawFilter(filter: Filter): Filter {
     if (exchange === "bitmex") {
       const set = new Set<string>();
       for (const channel of channels) {
-        if (channel.startsWith("orderBookL2")) {
-          set.add("orderBookL2");
-        } else if (channel.startsWith("trade")) {
-          set.add("trade");
+        // remove symbol/currency name after the underscore if there
+        const ui = channel.indexOf("_")
+        if (ui !== -1) {
+          set.add(channel.substr(0, ui));
         } else {
           set.add(channel);
         }
       }
       newFilter[exchange] = Array.from(set);
     } else {
-      newFilter[exchange] = channels
+      newFilter[exchange] = channels;
     }
   }
   return newFilter;
@@ -74,7 +74,6 @@ export class ReplayRequestImpl implements ReplayRequest {
       end: this.setting.end,
       format: "json",
     });
-
 
     const array = await req.download();
     const result = Array(array.length)
