@@ -8,33 +8,39 @@ import { ClientSetting } from "../../client/impl";
 import { SnapshotParam, Snapshot } from "./snapshot";
 import { convertAnyDateTime } from "../../utils/datetime";
 import { getResponse } from "../../common/download";
+import { checkParamFilter } from '../../common/param';
 
 export type SnapshotSetting = {
   exchange: string;
   channels: string[];
   at: bigint;
-  format: string;
+  postFilter?: string[];
+  format?: string;
 }
 
 export function setupSnapshotSetting(param: SnapshotParam): SnapshotSetting {
-  if (!('at' in param)) throw new Error('"at" date time was not specified');
-
   if (!('exchange' in param)) throw new Error('"exchange" was not specified');
-  if (!('channels' in param)) throw new Error('"topics" was not specified');
+  if (!('channels' in param)) throw new Error('"channels" was not specified');
+  if (!Array.isArray(param.channels)) throw new TypeError('"channels" must be an array of string');
   for (const ch of param.channels) {
     if (typeof ch !== 'string') throw new Error('element of "channels" must be of string type');
   }
-  if (!('format' in param)) throw new Error('"format" was not specified');
-  if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
-  
-  const topics = JSON.parse(JSON.stringify(param.channels));
-
-  return {
-    exchange: param.exchange,
-    channels: topics,
+  const channels = JSON.parse(JSON.stringify(param.channels));
+  if (!('at' in param)) throw new Error('"at" date time was not specified');
+  const setting: SnapshotSetting = {
     at: convertAnyDateTime(param.at),
-    format: param.format,
+    exchange: param.exchange,
+    channels: channels,
+  };
+  if ('postFilter' in param) {
+    checkParamFilter(param, 'postFilter');
+    setting.postFilter = param.postFilter;
   }
+  if ('format' in param) {
+    if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
+    setting.format = param.format;
+  }
+  return setting;
 }
 
 async function readResponse(stream: NodeJS.ReadableStream): Promise<Snapshot[]> {

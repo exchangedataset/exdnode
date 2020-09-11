@@ -9,56 +9,60 @@ import { FilterParam } from "./filter";
 import { convertAnyDateTime, convertAnyMinute } from "../../utils/datetime";
 import { ClientSetting } from "../../client/impl";
 import { getResponse } from "../../common/download";
+import { ParsedUrlQueryInput } from 'querystring';
 
 export type FilterSetting = {
   exchange: string;
   channels: string[];
-  start: bigint;
-  end: bigint;
   minute: number;
-  format: string;
+  start?: bigint;
+  end?: bigint;
+  postFilter?: string[];
+  format?: string;
 }
 
 export function setupFilterSetting(param: FilterParam): FilterSetting {
-  if (!('start' in param)) throw new Error('"start" date time was not specified');
-  if (!('end' in param)) throw new Error('"end" date time was not specified');
-  // type check for those parameter will be done in convertDatetimeParam function
-
   if (!('exchange' in param)) throw new Error('"exchange" was not specified');
   if (!('channels' in param)) throw new Error('"channels" was not specified');
   if (!Array.isArray(param.channels)) throw new TypeError('"channels" must be an array of string');
   for (const ch of param.channels) {
     if (typeof ch !== 'string') throw new Error('element of "channels" must be of string type');
   }
-  if (!('minute' in param)) throw new Error('"minute" was not specified');
-  const minute = convertAnyMinute(param.minute);
-  if (!('format' in param)) throw new Error('"format" was not specified');
-  if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
-
-  const start = convertAnyDateTime(param.start);
-  let end = convertAnyDateTime(param.end);
-  if (typeof param.end === 'number') {
-    // if end is in minute, that means end + 60 seconds (exclusive)
-    // adding 60 seconds
-    end += BigInt('60') * BigInt('1000000000');
-  }
-
-  if (end <= start) {
-    throw new Error('Invalid date time range "end" <= "start"');
-  }
-
   // deep copy channels parameter
   const channels = JSON.parse(JSON.stringify(param.channels));
-
-  // must return new object so it won't be modified externally
-  return {
+  if (!('minute' in param)) throw new Error('"minute" was not specified');
+  const setting: FilterSetting = {
     exchange: param.exchange,
     channels,
-    start,
-    end,
-    minute,
-    format: param.format,
+    minute: convertAnyMinute(param.minute),
   };
+  if ('start' in param) {
+    setting.start = convertAnyDateTime(param.start);
+  }
+  if ('end' in param) {
+    let end = convertAnyDateTime(param.end);
+    if (typeof param.end === 'number') {
+      // if end is in minute, that means end + 60 seconds (exclusive)
+      // adding 60 seconds
+      end += BigInt('60') * BigInt('1000000000');
+    }
+    if (typeof setting.start !== 'undefined' && end <= setting.start) {
+      throw new Error('Invalid date time range "end" <= "start"');
+    }
+    setting.end = end;
+  }
+  if ('postFilter' in param) {
+    if (!Array.isArray(param.postFilter)) throw new TypeError('"postFilter" must be an array of string');
+    for (const ch of param.postFilter) {
+      if (typeof ch !== 'string') throw new Error('element of "postFilter" must be of string type');
+    }
+    setting.postFilter = param.postFilter;
+  }
+  if ('format' in param) {
+    if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
+    setting.format = param.format;
+  }
+  return setting;
 }
 
 function convertLineType(type: string): LineType {
@@ -147,15 +151,20 @@ async function readLines(exchange: string, stream: NodeJS.ReadableStream): Promi
 
 export async function _filter(clientSetting: ClientSetting, setting: FilterSetting): Promise<Shard<string>> {
   // request and download
+  const query: ParsedUrlQueryInput = {
+    channels: setting.channels,
+    format: setting.format,
+  }
+  if (typeof setting.start !== 'undefined') {
+    query.start = setting.start.toString();
+  }
+  if (typeof setting.end !== 'undefined') {
+    query.end = setting.end.toString();
+  }
   const res = await getResponse(
     clientSetting,
     `filter/${setting.exchange}/${setting.minute}`,
-    {
-      channels: setting.channels,
-      start: setting.start.toString(),
-      end: setting.end.toString(),
-      format: setting.format,
-    },
+    query,
   );
 
   // process stream to get lines

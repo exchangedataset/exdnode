@@ -17,6 +17,10 @@ export type FilterParam = {
    */
   channels: string[];
   /**
+   * What channels to filter-in after being formatted.
+   */
+  postFilter: string[];
+  /**
    * Start date-time.
    */
   start: AnyDateTime;

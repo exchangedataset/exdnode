@@ -28,7 +28,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     private channels: string[],
     private start: bigint,
     private end: bigint,
-    private format: string,
+    private format?: string,
     bufferSize: number = DEFAULT_BUFFER_SIZE,
   ) {
     this.nextMinute = convertNanosecToMinute(start);

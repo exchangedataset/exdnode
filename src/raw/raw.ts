@@ -14,6 +14,12 @@ export type RawRequestParam = {
    */
   filter: Filter;
   /**
+   * What exchanges and channels to filter-in after being formatted.
+   * Symbol-wise filtering are not supported for some exchanges,
+   * but such channels can be filtered-in in post formatting.
+   */
+  postFilter?: Filter;
+  /**
    * Start date-time.
    */
   start: AnyDateTime;
@@ -26,7 +32,7 @@ export type RawRequestParam = {
    * If you specify raw, then you will get result in raw format that the exchanges are providing with.
    * If you specify json, then you will get result formatted in JSON format.
    */
-  format: "raw" | "json";
+  format?: "raw" | "json";
 }
 
 /**

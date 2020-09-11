@@ -15,34 +15,39 @@ export type RawRequestSetting = {
   filter: Filter;
   start: bigint;
   end: bigint;
-  format: "raw" | "json";
+  postFilter?: Filter;
+  format?: string;
 }
 
 export function setupRawRequestSetting(param: RawRequestParam): RawRequestSetting {
+  checkParamFilter(param, 'filter');
+  const filter = JSON.parse(JSON.stringify(param.filter));
   if (!('start' in param)) throw new Error('"start" date time was not specified');
   if (!('end' in param)) throw new Error('"end" date time was not specified');
-  checkParamFilter(param);
-  if (!('format' in param)) throw new Error('"format" was not specified');
-  if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
-
   const start = convertAnyDateTime(param.start);
   let end = convertAnyDateTime(param.end);
   if (typeof param.end === 'number') {
     end += BigInt('60') * BigInt('1000000000');
   }
-
   if (end <= start) {
     throw new Error('Invalid date time range "end" <= "start"');
   }
-
-  const filter = JSON.parse(JSON.stringify(param.filter));
-
-  return {
+  // set essential fields
+  const setting: RawRequestSetting = {
     filter,
     start,
     end,
-    format: param.format,
-  };
+  }
+  // set optional fields
+  if ('postFilter' in param) {
+    checkParamFilter(param, 'postFilter');
+    setting.postFilter = JSON.parse(JSON.stringify(param.postFilter));
+  }
+  if ('format' in param) {
+    if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
+    setting.format = param.format;
+  }
+  return setting;
 }
 
 export class RawRequestImpl implements RawRequest {

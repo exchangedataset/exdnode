@@ -6,7 +6,7 @@
 import { Line, Shard } from "../common/line";
 import { ClientSetting } from "../client/impl";
 import { _filter} from "../http/filter/impl";
-import { setupSnapshotSetting, _snapshot } from "../http/snapshot/impl";
+import { _snapshot, SnapshotSetting } from "../http/snapshot/impl";
 import { convertSnapshotToLine } from "./common";
 import { convertNanosecToMinute } from "../utils/datetime";
 import { DOWNLOAD_BATCH_SIZE } from "../constants";
@@ -56,14 +56,18 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
     const resolvedBatches: Shard<string>[][] = [];
 
     let batch: Promise<Shard<string>>[] = [];
-    batch.push(
-      _snapshot(clientSetting, setupSnapshotSetting({
-        exchange,
-        channels,
-        at: setting.start,
-        format: setting.format,
-      })).then((sss) => sss.map((ss) => convertSnapshotToLine(exchange, ss)))
-    );
+    const ssset: SnapshotSetting = {
+      exchange,
+      channels,
+      at: setting.start,
+    }
+    if (typeof setting.postFilter !== 'undefined') {
+      ssset.postFilter = setting.postFilter[exchange];
+    }
+    if (typeof setting.format !== 'undefined') {
+      ssset.format = setting.format;
+    }
+    batch.push(_snapshot(clientSetting, ssset).then((sss) => sss.map((ss) => convertSnapshotToLine(exchange, ss))));
 
     // Promise.all ing all of them will cause server to overload
     // divide it by batch and download one by one
