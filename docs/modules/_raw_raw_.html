@@ -96,7 +96,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="rawrequestparam" class="tsd-anchor"></a>
 					<h3>Raw<wbr>Request<wbr>Param</h3>
-					<div class="tsd-signature tsd-kind-icon">Raw<wbr>Request<wbr>Param<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol">; </span>filter<span class="tsd-signature-symbol">: </span><a href="_common_param_.html#filter" class="tsd-signature-type">Filter</a><span class="tsd-signature-symbol">; </span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"raw"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"json"</span><span class="tsd-signature-symbol">; </span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Raw<wbr>Request<wbr>Param<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol">; </span>filter<span class="tsd-signature-symbol">: </span><a href="_common_param_.html#filter" class="tsd-signature-type">Filter</a><span class="tsd-signature-symbol">; </span>format<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"raw"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"json"</span><span class="tsd-signature-symbol">; </span>postFilter<span class="tsd-signature-symbol">?: </span><a href="_common_param_.html#filter" class="tsd-signature-type">Filter</a><span class="tsd-signature-symbol">; </span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in raw/raw.ts:11</li>
@@ -127,12 +127,22 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"raw"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"json"</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> format<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"raw"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"json"</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>What format to receive response with.
 											If you specify raw, then you will get result in raw format that the exchanges are providing with.
 										If you specify json, then you will get result formatted in JSON format.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> post<wbr>Filter<span class="tsd-signature-symbol">?: </span><a href="_common_param_.html#filter" class="tsd-signature-type">Filter</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>What exchanges and channels to filter-in after being formatted.
+											Symbol-wise filtering are not supported for some exchanges,
+										but such channels can be filtered-in in post formatting.</p>
 									</div>
 								</div>
 							</li>
@@ -160,16 +170,27 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in raw/raw.ts:65</li>
+									<li>Defined in raw/raw.ts:76</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates new <code>RawRequest</code> with the given parameters.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>clientParam: <a href="_client_client_.html#clientparam" class="tsd-signature-type">ClientParam</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Client parameter</p>
+									</div>
 								</li>
 								<li>
 									<h5>param: <a href="_raw_raw_.html#rawrequestparam" class="tsd-signature-type">RawRequestParam</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Request parameter</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_raw_raw_.rawrequest.html" class="tsd-signature-type">RawRequest</a></h4>
@@ -265,6 +286,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

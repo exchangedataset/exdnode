@@ -90,7 +90,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="filterparam" class="tsd-anchor"></a>
 					<h3>Filter<wbr>Param</h3>
-					<div class="tsd-signature tsd-kind-icon">Filter<wbr>Param<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>channels<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol">; </span>exchange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>minute<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyMinute</span><span class="tsd-signature-symbol">; </span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Filter<wbr>Param<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>channels<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol">; </span>exchange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>minute<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyMinute</span><span class="tsd-signature-symbol">; </span>postFilter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in http/filter/filter.ts:10</li>
@@ -98,7 +98,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Parameters to make new {@link FilterRequest}.</p>
+							<p>Parameters to make new request to Filter HTTP Endpoint.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -145,6 +145,14 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
+								<h5>post<wbr>Filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>What channels to filter-in after being formatted.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
 								<h5>start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnyDateTime</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
@@ -168,12 +176,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in http/filter/filter.ts:42</li>
+									<li>Defined in http/filter/filter.ts:46</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns <code>Promise</code> of {@link FilterRequest} for given client and filter parameter.</p>
+									<p>Returns <code>Promise</code> of <a href="_common_line_.html#shard">Shard</a>s for given client and filter parameter.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -281,6 +289,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
