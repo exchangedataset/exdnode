@@ -32,7 +32,8 @@ export default class RawStreamIterator implements AsyncIterator<Line<string>> {
           this.setting.start,
           this.setting.end,
           this.setting.format,
-          this.bufferSize
+          typeof this.setting.postFilter === 'undefined' ? undefined : this.setting.postFilter[exchange],
+          this.bufferSize,
         );
         const next = await iterator.next();
 

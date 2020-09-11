@@ -8,7 +8,7 @@ import { DEFAULT_BUFFER_SIZE } from "../../constants";
 import { convertNanosecToMinute } from "../../utils/datetime";
 import { Shard } from "../../common/line";
 import { _filter } from "../../http/filter/impl";
-import { _snapshot, setupSnapshotSetting } from "../../http/snapshot/impl";
+import { _snapshot } from "../../http/snapshot/impl";
 import { convertSnapshotToLine } from "../common";
 
 type ShardSlot = { shard?: Shard<string> };
@@ -29,6 +29,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     private start: bigint,
     private end: bigint,
     private format?: string,
+    private postFilter?: string[],
     bufferSize: number = DEFAULT_BUFFER_SIZE,
   ) {
     this.nextMinute = convertNanosecToMinute(start);
@@ -49,12 +50,13 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
       // it must download snapshot first
       download = _snapshot(
         this.clientSetting,
-        setupSnapshotSetting({
+        {
           exchange: this.exchange,
           channels: this.channels,
           at: this.start,
           format: this.format,
-        })
+          postFilter: this.postFilter,
+        },
       ).then((sss) => sss.map((ss) => convertSnapshotToLine(this.exchange, ss)))
     } else {
       download = _filter(
@@ -66,6 +68,7 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
           end: this.end,
           minute: this.nextMinute,
           format: this.format,
+          postFilter: this.postFilter,
         }
       );
       this.nextMinute += 1;
