@@ -23,11 +23,11 @@ describe('Replay', function() {
     const stream = easyReq.stream();
     let count = 0;
     for await (const line of stream) {
-      assert.deepEqual(easy[count].message, line.message, 'line is different');
+      assert.deepStrictEqual(easy[count].message, line.message, 'line is different');
       assert.deepStrictEqual(typeof line.channel, "string", "expected string as channel:"+line.channel)
       assert.ok(typeof line.message === "object" || typeof line.message === "string", "expected string or object as a message:"+JSON.stringify(line.message))
       count++;
     }
-    assert.deepEqual(count, easy.length, 'line count is different');
+    assert.deepStrictEqual(count, easy.length, 'line count is different');
   });
 })

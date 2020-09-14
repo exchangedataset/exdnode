@@ -32,13 +32,13 @@ describe('RawRequest', function() {
       this.timeout(20000);
       const res = await easyReq.download();
       downloadParams = res;
-      assert.notDeepEqual(res.length, 0, 'returned array empty: expected at least one line');
+      assert.notDeepStrictEqual(res.length, 0, 'returned array empty: expected at least one line');
     });
     it('multiple exchanges', async function() {
       this.timeout(20000);
       const res = await hardReq.download();
       downloadTruncate = res;
-      assert.notDeepEqual(res.length, 0, 'returned array empty: expected at least one line');
+      assert.notDeepStrictEqual(res.length, 0, 'returned array empty: expected at least one line');
       // all of timestamps of lines must be within value which caller intended
       for (line of res) {
         assert.ok(hardStart <= line.timestamp && line.timestamp < hardEnd, `timestamp is out of range of what expected: ${line.timestamp}, exp: ${hardStart} to ${hardEnd}`);
@@ -52,19 +52,19 @@ describe('RawRequest', function() {
       this.timeout(20000);
       let count = 0;
       for await (line of easyReq.stream()) {
-        assert.deepEqual(line.timestamp, downloadParams[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadParams[count].timestamp}`);
+        assert.deepStrictEqual(line.timestamp, downloadParams[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadParams[count].timestamp}`);
         count += 1;
       }
-      assert.deepEqual(count, downloadParams.length, 'line count is different');
+      assert.deepStrictEqual(count, downloadParams.length, 'line count is different');
     });
     it('multiple exchanges', async function() {
       this.timeout(20000);
       let count = 0;
       for await (line of hardReq.stream()) {
-        assert.deepEqual(line.timestamp, downloadTruncate[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadTruncate[count].timestamp}`);
+        assert.deepStrictEqual(line.timestamp, downloadTruncate[count].timestamp, `this line is different between download and stream:\n${line.timestamp}\n${downloadTruncate[count].timestamp}`);
         count += 1;
       }
-      assert.deepEqual(count, downloadTruncate.length, 'line count is different');
+      assert.deepStrictEqual(count, downloadTruncate.length, 'line count is different');
     });
   });
 });
