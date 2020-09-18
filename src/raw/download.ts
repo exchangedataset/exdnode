@@ -61,9 +61,6 @@ async function downloadAllShards(clientSetting: ClientSetting, setting: RawReque
       channels,
       at: setting.start,
     }
-    if (typeof setting.postFilter !== 'undefined') {
-      ssset.postFilter = setting.postFilter[exchange];
-    }
     if (typeof setting.format !== 'undefined') {
       ssset.format = setting.format;
     }

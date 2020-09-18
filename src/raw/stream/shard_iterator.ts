@@ -29,7 +29,6 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
     private start: bigint,
     private end: bigint,
     private format?: string,
-    private postFilter?: string[],
     bufferSize: number = DEFAULT_BUFFER_SIZE,
   ) {
     this.nextMinute = convertNanosecToMinute(start);
@@ -55,7 +54,6 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
           channels: this.channels,
           at: this.start,
           format: this.format,
-          postFilter: this.postFilter,
         },
       ).then((sss) => sss.map((ss) => convertSnapshotToLine(this.exchange, ss)))
     } else {
@@ -68,7 +66,6 @@ export default class ExchangeStreamShardIterator implements AsyncIterator<Shard<
           end: this.end,
           minute: this.nextMinute,
           format: this.format,
-          postFilter: this.postFilter,
         }
       );
       this.nextMinute += 1;

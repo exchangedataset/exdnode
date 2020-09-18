@@ -14,12 +14,6 @@ export type RawRequestParam = {
    */
   filter: Filter;
   /**
-   * What exchanges and channels to filter-in after being formatted.
-   * Symbol-wise filtering are not supported for some exchanges,
-   * but such channels can be filtered-in in post formatting.
-   */
-  postFilter?: Filter;
-  /**
    * Start date-time.
    */
   start: AnyDateTime;

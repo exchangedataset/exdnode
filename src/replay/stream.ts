@@ -2,7 +2,7 @@
 import { ReplayMessage } from "./replay";
 import { Line } from "../common/line";
 import { ClientSetting } from "../client/impl";
-import { ReplayRequestSetting, convertReplayFilterToRawFilter, convertReplayFilterToRawPostFilter } from "./impl";
+import { ReplayRequestSetting } from "./impl";
 import { RawRequestImpl } from "../raw/impl";
 import RawLineProcessor from "./common";
 
@@ -13,8 +13,7 @@ export class ReplayStreamIterator implements AsyncIterator<Line<ReplayMessage>> 
 
   constructor(private clientSetting: ClientSetting, private setting: ReplayRequestSetting, bufferSize?: number) {
     const req = new RawRequestImpl(this.clientSetting, {
-      filter: convertReplayFilterToRawFilter(this.setting.filter),
-      postFilter: convertReplayFilterToRawPostFilter(this.setting.filter),
+      filter: this.setting.filter,
       start: this.setting.start,
       end: this.setting.end,
       format: "json",

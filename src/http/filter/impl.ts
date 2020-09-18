@@ -17,7 +17,6 @@ export type FilterSetting = {
   minute: number;
   start?: bigint;
   end?: bigint;
-  postFilter?: string[];
   format?: string;
 }
 
@@ -50,13 +49,6 @@ export function setupFilterSetting(param: FilterParam): FilterSetting {
       throw new Error('Invalid date time range "end" <= "start"');
     }
     setting.end = end;
-  }
-  if ('postFilter' in param) {
-    if (!Array.isArray(param.postFilter)) throw new TypeError('"postFilter" must be an array of string');
-    for (const ch of param.postFilter) {
-      if (typeof ch !== 'string') throw new Error('element of "postFilter" must be of string type');
-    }
-    setting.postFilter = param.postFilter;
   }
   if ('format' in param) {
     if (typeof param.format !== 'string') throw new Error('"format" must be of string type');

@@ -19,10 +19,9 @@ export default class ExchangeStreamIterator implements AsyncIterator<Line<string
     start: bigint,
     end: bigint,
     format?: string,
-    postFilter?: string[],
     bufferSize?: number,
   ) {
-    this.shardIterator = new ExchangeStreamShardIterator(clientSetting, exchange, channels, start, end, format, postFilter, bufferSize);
+    this.shardIterator = new ExchangeStreamShardIterator(clientSetting, exchange, channels, start, end, format, bufferSize);
     this.itrNext = null;
     this.position = 0;
   }

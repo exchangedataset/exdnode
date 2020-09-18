@@ -15,7 +15,6 @@ export type RawRequestSetting = {
   filter: Filter;
   start: bigint;
   end: bigint;
-  postFilter?: Filter;
   format?: string;
 }
 
@@ -39,10 +38,6 @@ export function setupRawRequestSetting(param: RawRequestParam): RawRequestSettin
     end,
   }
   // set optional fields
-  if ('postFilter' in param) {
-    checkParamFilter(param, 'postFilter');
-    setting.postFilter = JSON.parse(JSON.stringify(param.postFilter));
-  }
   if ('format' in param) {
     if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
     setting.format = param.format;

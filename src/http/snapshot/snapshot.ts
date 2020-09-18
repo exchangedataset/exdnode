@@ -16,10 +16,6 @@ export type SnapshotParam = {
    */
   channels: string[];
   /**
-   * What channels to filter-in after the formatting.
-   */
-  postFilter?: string[];
-  /**
    * Date-time to take snapshot at.
    */
   at: AnyDateTime;

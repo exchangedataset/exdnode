@@ -14,7 +14,6 @@ export type SnapshotSetting = {
   exchange: string;
   channels: string[];
   at: bigint;
-  postFilter?: string[];
   format?: string;
 }
 
@@ -32,10 +31,6 @@ export function setupSnapshotSetting(param: SnapshotParam): SnapshotSetting {
     exchange: param.exchange,
     channels: channels,
   };
-  if ('postFilter' in param) {
-    checkParamFilter(param, 'postFilter');
-    setting.postFilter = param.postFilter;
-  }
   if ('format' in param) {
     if (typeof param.format !== 'string') throw new Error('"format" must be of string type');
     setting.format = param.format;
